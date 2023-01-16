@@ -1,0 +1,24 @@
+{
+  "name": "evcommunities-gui-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EVCommunities/GUI.git"
+  },
+  "author": "Chalith Haputhantrige (chalith.haputhantrige@tuni.fi)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EVCommunities/GUI/issues"
+  },
+  "homepage": "https://github.com/EVCommunities/GUI#readme",
+  "dependencies": {
+    "axios": "^1.2.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
+}
