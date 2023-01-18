@@ -1,4 +1,6 @@
 import React, { useEffect, useState }  from "react";
+import {Chart as ChartJS, LinearScale, PointElement, Tooltip, Legend, TimeScale} from "chart.js"; 
+import 'chartjs-adapter-date-fns';
 import { Line } from 'react-chartjs-2';
 import { Bar } from 'react-chartjs-2';
 import { Box, Button, Card, CardContent, CardHeader, Divider, useTheme,LinearProgress, Typography } from '@mui/material';
@@ -6,11 +8,23 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import axios from "axios";
 
+ChartJS.register(LinearScale, PointElement, Tooltip, Legend, TimeScale);
+
 export const UserPowerChart = (props) => {
   const theme = useTheme();
 
   const options = {
     scales: {
+      x: {
+        type: 'time',
+        time: {
+          // unit: "minute",
+          // unitStepSize: 1000
+          displayFormats: {
+            minute: 'h:mm'
+        }
+        }
+      },
       "y1": {
         id:"y1",
         beginAtZero: true,
@@ -33,15 +47,15 @@ export const UserPowerChart = (props) => {
     maintainAspectRatio: false,
     responsive: true,
     xAxes: [
-      {
-        ticks: {
-          fontColor: theme.palette.text.secondary
-        },
-        gridLines: {
-          display: false,
-          drawBorder: false
-        }
-      }
+      // {
+      //   ticks: {
+      //     fontColor: theme.palette.text.secondary
+      //   },
+      //   gridLines: {
+      //     display: false,
+      //     drawBorder: false
+      //   }
+      // }
     ],
     yAxes: [
       {
@@ -120,26 +134,42 @@ export const UserPowerChart = (props) => {
       <Divider />
       <CardContent>
       <Typography
-            color="success"
+            color="info"
             gutterBottom="true"
             variant="overline"
           >
-            Initial Battery : {props.user.StateOfCharge}% &nbsp; &nbsp;
+            Battery Capacity : <span style={{'color':'blue'}}>{props.user.CarBatteryCapacity}kwh </span>  &nbsp; &nbsp; 
             </Typography>
             <Typography
             color="info"
             gutterBottom="true"
             variant="overline"
           >
-            Requested Battery:  {props.user.TargetStateOfCharge}%  &nbsp; &nbsp; 
+            Max Power Input : <span style={{'color':'blue'}}>{props.user.CarMaxPower}kw </span>  &nbsp; &nbsp; 
+            </Typography>
+      <Divider />
+      <Typography
+            color="success"
+            gutterBottom="true"
+            variant="overline"
+          >
+             Initial Battery : <span style={{'color':'red'}}> {props.user.StateOfCharge}%  </span>&nbsp; &nbsp;
+            </Typography>
+            <Typography
+            color="info"
+            gutterBottom="true"
+            variant="overline"
+          >
+            Requested Battery: <span style={{'color':'orange'}}>{props.user.TargetStateOfCharge}% </span>  &nbsp; &nbsp; 
             </Typography>
             <Typography
             color="success"
             gutterBottom="true"
             variant="overline"
           >
-            Final Battery: {props.finalcharge}%  &nbsp; &nbsp;
+            Final Battery: <span style={{'color':'green'}}> {props.finalcharge}% </span>  &nbsp; &nbsp;
           </Typography>
+          <Divider />
         <Box
           sx={{
             height: 400,

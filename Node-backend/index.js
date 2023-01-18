@@ -17,14 +17,14 @@ app.get("/data", async function(req, res) {
         "http://localhost:8080/simulations/" + simid + "/messages?topic=Start"
       );
       let stations; 
-      let epochs; 
+      let epochStartTime; 
       let epochLength; 
       let users; 
       let epochCount;
       initialData.data.forEach(element => {
         if (element.ProcessParameters) {
           stations = element.ProcessParameters.StationComponent;
-          epochs = element.ProcessParameters.SimulationManager.MaxEpochCount;
+          epochStartTime = element.ProcessParameters.SimulationManager.InitialStartTime;
           epochLength = element.ProcessParameters.SimulationManager.EpochLength;
           users = element.ProcessParameters.UserComponent;
           epochCount = element.ProcessParameters.SimulationManager.MaxEpochCount;
@@ -32,6 +32,7 @@ app.get("/data", async function(req, res) {
         }
       });
       let stationObjs = {};
+      let timeseconds = new Date(epochStartTime).getTime()
       Object.keys(stations).forEach(elem => {
         let userComp;
         Object.keys(users).forEach(userKey => {
@@ -44,7 +45,7 @@ app.get("/data", async function(req, res) {
         stationObjs[elem] = {
           powerOutput: [],
           chargingState: [userComp.StateOfCharge],
-          timeline: [0],
+          timeline: [new Date(timeseconds)],
           userComponent: userComp,
           stationComponent: stations[elem],
           finalchargingState: 0
@@ -66,7 +67,10 @@ app.get("/data", async function(req, res) {
             stationObjs[sid].chargingState.push(d.StateOfCharge);
             stationObjs[sid].finalchargingState = d.StateOfCharge;
             if (d.Topic === "User.CarState") {
-              stationObjs[sid].timeline.push(i);
+              stationObjs[sid].timeline.push(new Date(timeseconds + (epochLength * i * 1000)));
+            //   let t = new Date(timeseconds + (epochLength * i * 1000))
+            //   let T = t.getHours().toString() + ":" + t.getMinutes().toString() + "0"
+            //   stationObjs[sid].timeline.push(T);
             }
           }
         });
