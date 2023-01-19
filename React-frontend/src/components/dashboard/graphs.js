@@ -11,6 +11,13 @@ export const Graphs = (props) => {
 
     let simid = props.simid
 
+    const setTimeline = (timelinearray) => {
+        let T = []
+        timelinearray.forEach(time => {
+            T.push(new Date(time))
+        })
+        return T
+    }
     const [data, setData] = useState([]);
     console.log("simid: awa  ",props.simid)
     useEffect(() => {
@@ -34,7 +41,7 @@ export const Graphs = (props) => {
                         <UserPowerChart
                             data1={res.data[item].chargingState}
                             data2={res.data[item].powerOutput}
-                            labels={res.data[item].timeline}
+                            labels={setTimeline(res.data[item].timeline)}
                             user={res.data[item].userComponent}
                             station={res.data[item].stationComponent}
                             finalcharge={res.data[item].finalchargingState}
