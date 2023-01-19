@@ -15,7 +15,7 @@ export const Graphs = (props) => {
     const setTimeline = (timelinearray) => {
         let T = []
         timelinearray.forEach(time => {
-            T.push(new Date(time))
+            T.push(time.substring(11, 16))  // a hack to get the time from ISO-8601 string
         })
         return T
     }

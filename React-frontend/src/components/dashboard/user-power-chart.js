@@ -14,16 +14,16 @@ export const UserPowerChart = (props) => {
 
   const options = {
     scales: {
-      x: {
-        type: 'time',
-        time: {
-          // unit: "minute",
-          // unitStepSize: 1000
-          displayFormats: {
-            minute: 'h:mm'
-        }
-        }
-      },
+      // x: {
+      //   type: 'time',
+      //   time: {
+      //     // unit: "minute",
+      //     // unitStepSize: 1000
+      //     displayFormats: {
+      //       minute: 'h:mm'
+      //   }
+      //   }
+      // },
       "y1": {
         id:"y1",
         beginAtZero: true,
