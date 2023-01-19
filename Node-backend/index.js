@@ -9,17 +9,19 @@ app.listen(7001, () => {
   console.log("Server running on port 7001");
 });
 
+const logreaderAddress = process.env.LOGREADER_API || "http://localhost:8080";
+
 app.get("/data", async function(req, res) {
   if (req.query.simid) {
     try {
       let simid = req.query.simid;
       const initialData = await axios.get(
-        "http://localhost:8080/simulations/" + simid + "/messages?topic=Start"
+        logreaderAddress + "/simulations/" + simid + "/messages?topic=Start"
       );
-      let stations; 
-      let epochStartTime; 
-      let epochLength; 
-      let users; 
+      let stations;
+      let epochStartTime;
+      let epochLength;
+      let users;
       let epochCount;
       initialData.data.forEach(element => {
         if (element.ProcessParameters) {
@@ -53,7 +55,7 @@ app.get("/data", async function(req, res) {
       });
       for (let i = 1; i < epochCount + 1; i++) {
         const epochData = await axios.get(
-          "http://localhost:8080/simulations/" + simid + "/messages?epoch=" + i
+          logreaderAddress + "/simulations/" + simid + "/messages?epoch=" + i
         );
         epochData.data.forEach(d => {
           if (d.PowerOutput || d.PowerOutput == 0) {
@@ -87,4 +89,4 @@ app.get("/data", async function(req, res) {
   res.end()
   }
 });
-     
+
