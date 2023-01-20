@@ -7,14 +7,15 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import axios from "axios";
 import {UserPowerChart} from "./user-power-chart";
 
-export const Graphs = (props) => { 
+export const Graphs = (props) => {
 
     let simid = props.simid
+    const backendAddress = process.env.NEXT_PUBLIC_EVC_GUI_BACKEND || "http://localhost:7001";
 
     const setTimeline = (timelinearray) => {
         let T = []
         timelinearray.forEach(time => {
-            T.push(new Date(time))
+            T.push(time.substring(11, 16))  // a hack to get the time from ISO-8601 string
         })
         return T
     }
@@ -24,13 +25,13 @@ export const Graphs = (props) => {
         async function getData() {
             let arr = []
             try {
-                const res = await axios.get("http://localhost:7001/data?simid=" + simid);
+                const res = await axios.get(backendAddress + "/data?simid=" + simid);
                 let graphcount = Object.keys(res.data)
 
                 let i = 1
                 graphcount.forEach(item => {
-    
-                        arr.push(  
+
+                        arr.push(
                             <Grid
                             item
                             lg={6}
@@ -49,7 +50,7 @@ export const Graphs = (props) => {
                             </Grid>
                           )
                     i = i + 1
-    
+
                 })
             } catch(error) {
                 console.log(error)
@@ -61,12 +62,12 @@ export const Graphs = (props) => {
      },[props.simid])
 
 
-    
+
     return (
-        
+
         <>
         {simid ? data : <> </> }
-        
+
         </>
     )
 };

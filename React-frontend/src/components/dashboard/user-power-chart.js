@@ -1,6 +1,5 @@
 import React, { useEffect, useState }  from "react";
-import {Chart as ChartJS, LinearScale, PointElement, Tooltip, Legend, TimeScale} from "chart.js"; 
-import 'chartjs-adapter-date-fns';
+import {Chart as ChartJS, LinearScale, PointElement, Tooltip, Legend, TimeScale} from "chart.js";
 import { Line } from 'react-chartjs-2';
 import { Bar } from 'react-chartjs-2';
 import { Box, Button, Card, CardContent, CardHeader, Divider, useTheme,LinearProgress, Typography } from '@mui/material';
@@ -15,16 +14,16 @@ export const UserPowerChart = (props) => {
 
   const options = {
     scales: {
-      x: {
-        type: 'time',
-        time: {
-          // unit: "minute",
-          // unitStepSize: 1000
-          displayFormats: {
-            minute: 'h:mm'
-        }
-        }
-      },
+      // x: {
+      //   type: 'time',
+      //   time: {
+      //     // unit: "minute",
+      //     // unitStepSize: 1000
+      //     displayFormats: {
+      //       minute: 'h:mm'
+      //   }
+      //   }
+      // },
       "y1": {
         id:"y1",
         beginAtZero: true,
@@ -87,13 +86,13 @@ export const UserPowerChart = (props) => {
       titleFontColor: theme.palette.text.primary
     }
   };
-  
+
 
   const labels = props.labels;
   let data1 = props.data1
   let data2 = props.data2
   let count = 0
-  const [state, setState] = useState({ 
+  const [state, setState] = useState({
     labels: labels,
     datasets: [
       {
@@ -126,7 +125,7 @@ export const UserPowerChart = (props) => {
             size="small"
           >
             Ongoing Power Chart
-            
+
           </Button>
         )}
         title={props.user.UserName}
@@ -138,14 +137,14 @@ export const UserPowerChart = (props) => {
             gutterBottom="true"
             variant="overline"
           >
-            Battery Capacity : <span style={{'color':'blue'}}>{props.user.CarBatteryCapacity}kwh </span>  &nbsp; &nbsp; 
+            Battery Capacity : <span style={{'color':'blue'}}>{props.user.CarBatteryCapacity}kwh </span>  &nbsp; &nbsp;
             </Typography>
             <Typography
             color="info"
             gutterBottom="true"
             variant="overline"
           >
-            Max Power Input : <span style={{'color':'blue'}}>{props.user.CarMaxPower}kw </span>  &nbsp; &nbsp; 
+            Max Power Input : <span style={{'color':'blue'}}>{props.user.CarMaxPower}kw </span>  &nbsp; &nbsp;
             </Typography>
       <Divider />
       <Typography
@@ -160,7 +159,7 @@ export const UserPowerChart = (props) => {
             gutterBottom="true"
             variant="overline"
           >
-            Requested Battery: <span style={{'color':'orange'}}>{props.user.TargetStateOfCharge}% </span>  &nbsp; &nbsp; 
+            Requested Battery: <span style={{'color':'orange'}}>{props.user.TargetStateOfCharge}% </span>  &nbsp; &nbsp;
             </Typography>
             <Typography
             color="success"
