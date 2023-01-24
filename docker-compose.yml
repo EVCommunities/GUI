@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+
+  evcommunities-gui-backend:
+    image: evcommunities-gui-backend
+    build: Node-backend
+    container_name: evcommunities-gui-backend
+    restart: always
+    ports:
+      - ${EVC_GUI_BACKEND_PORT:-7001}:7001
+    environment:
+      LOGREADER_API: ${LOGREADER_API:-http://localhost:8080}
+    networks:
+      - evcommunities_demo
+
+  evcommunities-gui-frontend:
+    image: evcommunities-gui-frontend
+    build:
+      dockerfile: Dockerfile
+      context: React-frontend
+      args:
+        NEXT_PUBLIC_EVC_GUI_BACKEND: ${NEXT_PUBLIC_EVC_GUI_BACKEND}
+    container_name: evcommunities-gui-frontend
+    depends_on:
+      - evcommunities-gui-backend
+    restart: always
+    ports:
+      - ${EVC_GUI_FRONTEND_PORT:-3000}:3000
+    networks:
+      - evcommunities_demo
+
+networks:
+  evcommunities_demo:
+    name: evcommunities_demo
