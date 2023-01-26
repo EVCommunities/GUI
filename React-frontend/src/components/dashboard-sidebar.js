@@ -12,7 +12,12 @@ const items = [
     href: '/',
     icon: (<ChartBarIcon fontSize="small" />),
     title: 'Dashboard'
-  }
+  },
+  {
+    href: '/customers',
+    icon: (<ChartBarIcon fontSize="small" />),
+    title: 'Simiulations'
+  },
 ];
 
 export const DashboardSidebar = (props) => {

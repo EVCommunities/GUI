@@ -35,48 +35,71 @@ app.get("/data", async function(req, res) {
       });
       let stationObjs = {};
       let timeseconds = new Date(epochStartTime).getTime()
-      Object.keys(stations).forEach(elem => {
-        let userComp;
-        Object.keys(users).forEach(userKey => {
+      Object.keys(users).forEach(userKey => {
+        let stationComp;
+        Object.keys(stations).forEach(elem => {
           if (
             users[userKey].StationId.toString() === stations[elem].StationId
           ) {
-            userComp = users[userKey];
+            stationComp = stations[elem];
           }
         });
-        stationObjs[elem] = {
+        stationObjs[userKey] = {
           powerOutput: [],
-          chargingState: [userComp.StateOfCharge],
-          timeline: [new Date(timeseconds)],
-          userComponent: userComp,
-          stationComponent: stations[elem],
-          finalchargingState: 0
+          chargingState: [],
+          timeline: [],
+          userComponent: users[userKey],
+          stationComponent: stationComp,
+          initialChargingState: null,
+          finalchargingState: null
         };
       });
+      let timeL = [new Date(timeseconds)]
       for (let i = 1; i < epochCount + 1; i++) {
         const epochData = await axios.get(
           logreaderAddress + "/simulations/" + simid + "/messages?epoch=" + i
         );
-        epochData.data.forEach(d => {
-          if (d.PowerOutput || d.PowerOutput == 0) {
-            stationObjs[d.SourceProcessId].powerOutput.push(d.PowerOutput);
-            if (i == epochCount) {
-              stationObjs[d.SourceProcessId].powerOutput.push(d.PowerOutput);
+        timeL.push(new Date(timeseconds + (epochLength * i * 1000)));
+        Object.keys(stationObjs).forEach(uc => {
+        if(new Date (stationObjs[uc].userComponent.ArrivalTime) > new Date(timeseconds + (epochLength * i * 1000))){
+          stationObjs[uc].powerOutput.push(null)
+          stationObjs[uc].chargingState.push(null)
+        } else {
+          if(stationObjs[uc].initialChargingState == null){
+            stationObjs[uc].initialChargingState = stationObjs[uc].userComponent.StateOfCharge
+            if(stationObjs[uc].chargingState.includes(null)){
+              stationObjs[uc].powerOutput.push(null)
+              stationObjs[uc].chargingState.push(null)
+            } else {
+              stationObjs[uc].chargingState.push(stationObjs[uc].userComponent.StateOfCharge)
             }
+            
           }
-          if (d.StateOfCharge && d.Topic === "User.CarState") {
-            sid = "s" + d.StationId;
-            stationObjs[sid].chargingState.push(d.StateOfCharge);
-            stationObjs[sid].finalchargingState = d.StateOfCharge;
-            if (d.Topic === "User.CarState") {
-              stationObjs[sid].timeline.push(new Date(timeseconds + (epochLength * i * 1000)));
-            //   let t = new Date(timeseconds + (epochLength * i * 1000))
-            //   let T = t.getHours().toString() + ":" + t.getMinutes().toString() + "0"
-            //   stationObjs[sid].timeline.push(T);
+          epochData.data.forEach(d => {
+            if(stationObjs[uc].userComponent.UserId == d.UserId && d.Topic == "PowerOutputTopic"){
+              stationObjs[uc].powerOutput.push(d.PowerOutput)
             }
+            if(stationObjs[uc].userComponent.UserId == d.UserId && d.Topic == "User.CarState"){
+              stationObjs[uc].chargingState.push(d.StateOfCharge)
+            }
+          });
+        }
+        if(new Date (stationObjs[uc].userComponent.TargetTime) < new Date(timeseconds + (epochLength * i * 1000))){
+          if(stationObjs[uc].finalchargingState == null) {
+            stationObjs[uc].finalchargingState = stationObjs[uc].chargingState[(stationObjs[uc].chargingState).length - 1]
+            let pw = stationObjs[uc].powerOutput[(stationObjs[uc].powerOutput).length - 1]
+            stationObjs[uc].powerOutput.push(pw)
           }
-        });
+          stationObjs[uc].chargingState.pop()
+
+        }
+
+
+        })
       }
+      Object.keys(stationObjs).forEach(uc => {
+        stationObjs[uc].timeline = timeL
+      })
       res.send(stationObjs)
       res.end();
     } catch(error) {
@@ -90,3 +113,16 @@ app.get("/data", async function(req, res) {
   }
 });
 
+
+app.get("/simulations", async(req, res) => {
+    try {
+        const simulations = await axios.get(logreaderAddress + "/simulations");
+        res.send(simulations.data)
+        res.end();
+    } catch(e) {
+        console.log(e)
+        res.sendStatus(400)
+        res.end()
+    }
+
+})

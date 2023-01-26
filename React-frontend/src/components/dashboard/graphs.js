@@ -15,12 +15,13 @@ export const Graphs = (props) => {
     const setTimeline = (timelinearray) => {
         let T = []
         timelinearray.forEach(time => {
-            T.push(time.substring(11, 16))  // a hack to get the time from ISO-8601 string
+            // T.push(time.substring(11, 16))  // a hack to get the time from ISO-8601 string
+            T.push(new Date(time).toLocaleTimeString('en-GB', { hour: "numeric", minute: "numeric"}))
         })
         return T
     }
     const [data, setData] = useState([]);
-    console.log("simid: awa  ",props.simid)
+    console.log("simid: ",props.simid)
     useEffect(() => {
         async function getData() {
             let arr = []
@@ -36,7 +37,7 @@ export const Graphs = (props) => {
                             item
                             lg={6}
                             md={6}
-                            xl={6}
+                            xl={4}
                             xs={12}
                           >
                         <UserPowerChart
