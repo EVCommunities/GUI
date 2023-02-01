@@ -9,12 +9,14 @@ app.listen(7001, () => {
   console.log("Server running on port 7001");
 });
 
-const logreaderAddress = process.env.LOGREADER_API || "http://localhost:8080";
+const logreaderAddress = process.env.LOGREADER_API || "https://evc.tlt-cityiot.rd.tuni.fi/logreader" //"http://localhost:8080"  ;
 
 app.get("/data", async function(req, res) {
   if (req.query.simid) {
     try {
       let simid = req.query.simid;
+
+      //Get the initial data in simulation config yaml file
       const initialData = await axios.get(
         logreaderAddress + "/simulations/" + simid + "/messages?topic=Start"
       );
@@ -33,7 +35,9 @@ app.get("/data", async function(req, res) {
           return;
         }
       });
-      let stationObjs = {};
+
+      //Create empty userobjects for each user and assign relevant station for the user
+      let userObjects = {};
       let timeseconds = new Date(epochStartTime).getTime()
       Object.keys(users).forEach(userKey => {
         let stationComp;
@@ -44,7 +48,7 @@ app.get("/data", async function(req, res) {
             stationComp = stations[elem];
           }
         });
-        stationObjs[userKey] = {
+        userObjects[userKey] = {
           powerOutput: [],
           chargingState: [],
           timeline: [],
@@ -54,53 +58,52 @@ app.get("/data", async function(req, res) {
           finalchargingState: null
         };
       });
-      let timeL = [new Date(timeseconds)]
+
+      // Initial start time of the simulations
+      let timeL = [] 
+
+      //Get epoch data for each epoch
       for (let i = 1; i < epochCount + 1; i++) {
         const epochData = await axios.get(
           logreaderAddress + "/simulations/" + simid + "/messages?epoch=" + i
         );
-        timeL.push(new Date(timeseconds + (epochLength * i * 1000)));
-        Object.keys(stationObjs).forEach(uc => {
-        if(new Date (stationObjs[uc].userComponent.ArrivalTime) > new Date(timeseconds + (epochLength * i * 1000))){
-          stationObjs[uc].powerOutput.push(null)
-          stationObjs[uc].chargingState.push(null)
+        timeL.push(new Date(timeseconds + (epochLength * (i-1) * 1000)));
+        Object.keys(userObjects).forEach(uc => {
+        // Add null values if user is not arrived to station
+        if (new Date (userObjects[uc].userComponent.ArrivalTime) > new Date(timeseconds + (epochLength * (i-1) * 1000))) {
+          userObjects[uc].powerOutput.push(null)
+          userObjects[uc].chargingState.push(null)
         } else {
-          if(stationObjs[uc].initialChargingState == null){
-            stationObjs[uc].initialChargingState = stationObjs[uc].userComponent.StateOfCharge
-            if(stationObjs[uc].chargingState.includes(null)){
-              stationObjs[uc].powerOutput.push(null)
-              stationObjs[uc].chargingState.push(null)
-            } else {
-              stationObjs[uc].chargingState.push(stationObjs[uc].userComponent.StateOfCharge)
-            }
+          //Add initial charging state 
+          if(userObjects[uc].initialChargingState == null){
+            userObjects[uc].initialChargingState = userObjects[uc].userComponent.StateOfCharge
+            userObjects[uc].chargingState.push(userObjects[uc].userComponent.StateOfCharge)
             
           }
           epochData.data.forEach(d => {
-            if(stationObjs[uc].userComponent.UserId == d.UserId && d.Topic == "PowerOutputTopic"){
-              stationObjs[uc].powerOutput.push(d.PowerOutput)
+            if(new Date (userObjects[uc].userComponent.TargetTime) > new Date(timeseconds + (epochLength * (i-1) * 1000))){
+              if(userObjects[uc].stationComponent.StationId == d.StationId && d.Topic == "PowerOutputTopic"){
+                userObjects[uc].powerOutput.push(d.PowerOutput)
+              }
+              if(userObjects[uc].userComponent.UserId == d.UserId && d.Topic == "User.CarState"){
+                userObjects[uc].chargingState.push(d.StateOfCharge)
+              }
+            } else {
+              if(userObjects[uc].finalchargingState == null) {
+                userObjects[uc].finalchargingState = userObjects[uc].chargingState[(userObjects[uc].chargingState).length - 1]
+                userObjects[uc].powerOutput.push(0)
+              }
             }
-            if(stationObjs[uc].userComponent.UserId == d.UserId && d.Topic == "User.CarState"){
-              stationObjs[uc].chargingState.push(d.StateOfCharge)
-            }
+
           });
         }
-        if(new Date (stationObjs[uc].userComponent.TargetTime) < new Date(timeseconds + (epochLength * i * 1000))){
-          if(stationObjs[uc].finalchargingState == null) {
-            stationObjs[uc].finalchargingState = stationObjs[uc].chargingState[(stationObjs[uc].chargingState).length - 1]
-            let pw = stationObjs[uc].powerOutput[(stationObjs[uc].powerOutput).length - 1]
-            stationObjs[uc].powerOutput.push(pw)
-          }
-          stationObjs[uc].chargingState.pop()
-
-        }
-
-
         })
+
       }
-      Object.keys(stationObjs).forEach(uc => {
-        stationObjs[uc].timeline = timeL
+      Object.keys(userObjects).forEach(uc => {
+        userObjects[uc].timeline = timeL
       })
-      res.send(stationObjs)
+      res.send(userObjects)
       res.end();
     } catch(error) {
       console.log(error)
