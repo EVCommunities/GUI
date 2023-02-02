@@ -2,7 +2,7 @@ name: Docker image update for GUI backend server
 
 on:
     push:
-        branches: [ master, main, ghcr-test ]
+        branches: [ master, main ]
         tags: [ 'v*.*.*' ]
 
     # Allows to run this workflow manually from the Actions tab
