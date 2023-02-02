@@ -28,9 +28,9 @@ For some scenarios, due to a nextJS limitation, ChartJs timeline was getting err
 2. Start the GUI backend and frontend with Docker Compose:
 
     ```bash
-    docker-compose up --detach
+    docker-compose up --build --detach
     ```
 
-    - Note, add `--build` flag if you want to build the image locally instead of using the image stored at GitHub Container Registry.
+    - The frontend image requires knowledge about the backend server address during build time, and thus, the frontend image must be built locally unless the default address is in use. I.e., the frontend image stored in GitHub Container Repository is created using the default address.
 
 - To stop the and remove the created containers: `docker-compose down --remove-orphans`
