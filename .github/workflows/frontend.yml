@@ -48,7 +48,7 @@ jobs:
               uses: docker/build-push-action@v3.2.0
               with:
                   context: React-frontend
-                  file: Dockerfile
+                  file: React-frontend/Dockerfile
                   push: ${{ github.event_name != 'pull_request' }}
                   tags: |
                       ${{ steps.metadata.outputs.tags }}
