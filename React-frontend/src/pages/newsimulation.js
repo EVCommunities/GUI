@@ -1,16 +1,14 @@
 import Head from 'next/head';
-import { Box, Container, Grid } from '@mui/material';
-
+import { Box, Container, Grid, Typography } from '@mui/material';
+import { NewSimulation } from '../components/simulation/new-simulation';
 import { DashboardLayout } from '../components/dashboard-layout';
-import {Graphs} from '../components/dashboard/graphs';
-import {GraphSection} from '../components/dashboard/graphs-section';
 
 
 const Page = () => (
   <>
     <Head>
       <title>
-        Dashboard
+        New Simulation 
       </title>
     </Head>
     <Box
@@ -20,14 +18,26 @@ const Page = () => (
         py: 8
       }}
     >
-      <Container maxWidth={false}>
+      <Container maxWidth="lg">
+        <Typography
+          sx={{ mb: 3 }}
+          variant="h4"
+        >
+          Create A New Simulation
+        </Typography>
         <Grid
           container
           spacing={3}
         >
-            <GraphSection/> 
-                        <Graphs />
+          <Grid
+            item
+            lg={8}
+            md={8}
+            xs={12}
+          >
 
+<NewSimulation />
+          </Grid>
         </Grid>
       </Container>
     </Box>

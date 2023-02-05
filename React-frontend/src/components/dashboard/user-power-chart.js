@@ -168,6 +168,7 @@ export const UserPowerChart = (props) => {
           >
             Final Battery: <span style={{'color':'green'}}> {props.finalcharge}% </span>  &nbsp; &nbsp;
           </Typography>
+          <Divider />
           <Typography
             color="info"
             gutterBottom="true"
@@ -181,7 +182,15 @@ export const UserPowerChart = (props) => {
             gutterBottom="true"
             variant="overline"
           >
-            Target Time : <span style={{'color':'brown'}}>{new Date (props.user.TargetTime).toLocaleString()} </span>  &nbsp; &nbsp;
+            Target Time : <span style={{'color':'brown'}}>{new Date (props.user.TargetTime).toLocaleString()} </span> 
+            </Typography>
+
+            <Typography
+            color="info"
+            gutterBottom="true"
+            variant="overline"
+          >
+            Station Max Power : <span style={{'color':'brown'}}>{props.station.MaxPower}KW </span>  &nbsp; &nbsp;
             </Typography>
             <Divider />
         <Box

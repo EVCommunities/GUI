@@ -18,7 +18,7 @@ import {
 import axios from "axios";
 import { getInitials } from '../../utils/get-initials';
 
-export const CustomerListResults = ({ customers, ...rest }) => {
+export const SimulationrListResults = ({ customers, ...rest }) => {
   const [selectedCustomerIds, setSelectedCustomerIds] = useState([]);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
@@ -47,6 +47,7 @@ useEffect(() => {
   };
 
   const handlePageChange = (event, newPage) => {
+    console.log("newpage :",newPage)
     setPage(newPage);
   };
 
@@ -75,7 +76,7 @@ useEffect(() => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {simulations.slice(0, limit).map((customer) => (
+              {simulations.slice((page*limit), ((page+1)*limit)).map((customer) => (
                 <TableRow
                   hover
                   key={customer.SimulationId}
@@ -134,6 +135,6 @@ useEffect(() => {
   );
 };
 
-CustomerListResults.propTypes = {
+SimulationrListResults.propTypes = {
 
 };

@@ -1,7 +1,7 @@
 
 import Head from 'next/head';
 import { Box, Container } from '@mui/material';
-import { CustomerListResults } from '../components/customer/customer-list-results';
+import { SimulationrListResults } from '../components/simulation/simulation-list-results';
 import { DashboardLayout } from '../components/dashboard-layout';
 
 
@@ -10,7 +10,7 @@ const Page = () => (
   <>
     <Head>
       <title>
-        Customers | Material Kit
+        Simiulations
       </title>
     </Head>
     <Box
@@ -22,7 +22,7 @@ const Page = () => (
     >
       <Container maxWidth={false}>
         <Box sx={{ mt: 3 }}>
-          <CustomerListResults />
+          <SimulationrListResults />
         </Box>
       </Container>
     </Box>

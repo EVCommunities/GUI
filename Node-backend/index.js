@@ -9,7 +9,10 @@ app.listen(7001, () => {
   console.log("Server running on port 7001");
 });
 
-const logreaderAddress = process.env.LOGREADER_API || "https://evc.tlt-cityiot.rd.tuni.fi/logreader" //"http://localhost:8080"  ;
+app.use(express.json())
+
+const logreaderAddress = process.env.LOGREADER_API || "http://localhost:8080"  ;
+const simulationStarterAddress = process.env.SIMULATION_STARTER || "http://localhost:8500/"  ;
 
 app.get("/data", async function(req, res) {
   if (req.query.simid) {
@@ -97,7 +100,12 @@ app.get("/data", async function(req, res) {
 
           });
         }
-        })
+        if(userObjects[uc].finalchargingState == null && i == epochCount) {
+          userObjects[uc].finalchargingState = userObjects[uc].chargingState[(userObjects[uc].chargingState).length - 1]
+        }
+      
+      
+      })
 
       }
       Object.keys(userObjects).forEach(uc => {
@@ -127,5 +135,24 @@ app.get("/simulations", async(req, res) => {
         res.sendStatus(400)
         res.end()
     }
+
+})
+
+app.post("/simulations", async(req, res) => {
+  try {
+     console.log(req.body)
+     const newSim = await axios.post(simulationStarterAddress , req.body, {
+      headers: {
+      'Content-Type': 'application/json',
+      'private-token': 'missing'
+      }
+    });
+     res.send(newSim.data)
+     res.end()
+  } catch(e) {
+      console.log(e)
+      res.sendStatus(400)
+      res.end()
+  }
 
 })

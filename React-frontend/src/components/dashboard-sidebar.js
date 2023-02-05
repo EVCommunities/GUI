@@ -4,6 +4,8 @@ import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { Box, Button, Divider, Drawer, Typography, useMediaQuery } from '@mui/material';
 import { ChartBar as ChartBarIcon } from '../icons/chart-bar';
+import {Simulation} from '../icons/simulations'
+import {Upload} from '../icons/upload'
 import { Logo } from './logo';
 import { NavItem } from './nav-item';
 
@@ -14,9 +16,14 @@ const items = [
     title: 'Dashboard'
   },
   {
-    href: '/customers',
-    icon: (<ChartBarIcon fontSize="small" />),
+    href: '/simulations',
+    icon: (<Simulation fontSize="small" />),
     title: 'Simiulations'
+  },
+  {
+    href: '/newsimulation',
+    icon: (<Upload fontSize="small" />),
+    title: 'New Simiulation'
   },
 ];
 
