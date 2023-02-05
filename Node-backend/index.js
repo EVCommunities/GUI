@@ -13,6 +13,7 @@ app.use(express.json())
 
 const logreaderAddress = process.env.LOGREADER_API || "http://localhost:8080"  ;
 const simulationStarterAddress = process.env.SIMULATION_STARTER || "http://localhost:8500/"  ;
+const privateToken = process.env.PRIVATE_TOKEN || "missing"
 
 app.get("/data", async function(req, res) {
   if (req.query.simid) {
@@ -144,7 +145,7 @@ app.post("/simulations", async(req, res) => {
      const newSim = await axios.post(simulationStarterAddress , req.body, {
       headers: {
       'Content-Type': 'application/json',
-      'private-token': 'missing'
+      'private-token': privateToken
       }
     });
      res.send(newSim.data)
