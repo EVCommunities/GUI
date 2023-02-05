@@ -128,7 +128,7 @@ export const UserPowerChart = (props) => {
 
           </Button>
         )}
-        title={props.user.UserName}
+        title={props.user.UserName + " - Station ID: " + props.user.StationId } 
       />
       <Divider />
       <CardContent>
@@ -169,6 +169,30 @@ export const UserPowerChart = (props) => {
             Final Battery: <span style={{'color':'green'}}> {props.finalcharge}% </span>  &nbsp; &nbsp;
           </Typography>
           <Divider />
+          <Typography
+            color="info"
+            gutterBottom="true"
+            variant="overline"
+          >
+            Arrival Time : <span style={{'color':'brown'}}>{new Date (props.user.ArrivalTime).toLocaleString()} </span>  &nbsp; &nbsp;
+            </Typography>
+
+            <Typography
+            color="info"
+            gutterBottom="true"
+            variant="overline"
+          >
+            Target Time : <span style={{'color':'brown'}}>{new Date (props.user.TargetTime).toLocaleString()} </span> 
+            </Typography>
+
+            <Typography
+            color="info"
+            gutterBottom="true"
+            variant="overline"
+          >
+            Station Max Power : <span style={{'color':'brown'}}>{props.station.MaxPower}KW </span>  &nbsp; &nbsp;
+            </Typography>
+            <Divider />
         <Box
           sx={{
             height: 400,

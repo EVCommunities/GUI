@@ -1,16 +1,16 @@
-import Head from 'next/head';
-import { Box, Container, Grid } from '@mui/material';
 
+import Head from 'next/head';
+import { Box, Container } from '@mui/material';
+import { SimulationrListResults } from '../components/simulation/simulation-list-results';
 import { DashboardLayout } from '../components/dashboard-layout';
-import {Graphs} from '../components/dashboard/graphs';
-import {GraphSection} from '../components/dashboard/graphs-section';
+
 
 
 const Page = () => (
   <>
     <Head>
       <title>
-        Dashboard
+        Simiulations
       </title>
     </Head>
     <Box
@@ -21,14 +21,9 @@ const Page = () => (
       }}
     >
       <Container maxWidth={false}>
-        <Grid
-          container
-          spacing={3}
-        >
-            <GraphSection/> 
-                        <Graphs />
-
-        </Grid>
+        <Box sx={{ mt: 3 }}>
+          <SimulationrListResults />
+        </Box>
       </Container>
     </Box>
   </>

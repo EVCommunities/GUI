@@ -9,12 +9,18 @@ app.listen(7001, () => {
   console.log("Server running on port 7001");
 });
 
-const logreaderAddress = process.env.LOGREADER_API || "http://localhost:8080";
+app.use(express.json())
+
+const logreaderAddress = process.env.LOGREADER_API || "http://localhost:8080"  ;
+const simulationStarterAddress = process.env.SIMULATION_STARTER || "http://localhost:8500/"  ;
+const privateToken = process.env.PRIVATE_TOKEN || "missing"
 
 app.get("/data", async function(req, res) {
   if (req.query.simid) {
     try {
       let simid = req.query.simid;
+
+      //Get the initial data in simulation config yaml file
       const initialData = await axios.get(
         logreaderAddress + "/simulations/" + simid + "/messages?topic=Start"
       );
@@ -33,51 +39,80 @@ app.get("/data", async function(req, res) {
           return;
         }
       });
-      let stationObjs = {};
+
+      //Create empty userobjects for each user and assign relevant station for the user
+      let userObjects = {};
       let timeseconds = new Date(epochStartTime).getTime()
-      Object.keys(stations).forEach(elem => {
-        let userComp;
-        Object.keys(users).forEach(userKey => {
+      Object.keys(users).forEach(userKey => {
+        let stationComp;
+        Object.keys(stations).forEach(elem => {
           if (
             users[userKey].StationId.toString() === stations[elem].StationId
           ) {
-            userComp = users[userKey];
+            stationComp = stations[elem];
           }
         });
-        stationObjs[elem] = {
+        userObjects[userKey] = {
           powerOutput: [],
-          chargingState: [userComp.StateOfCharge],
-          timeline: [new Date(timeseconds)],
-          userComponent: userComp,
-          stationComponent: stations[elem],
-          finalchargingState: 0
+          chargingState: [],
+          timeline: [],
+          userComponent: users[userKey],
+          stationComponent: stationComp,
+          initialChargingState: null,
+          finalchargingState: null
         };
       });
+
+      // Initial start time of the simulations
+      let timeL = [] 
+
+      //Get epoch data for each epoch
       for (let i = 1; i < epochCount + 1; i++) {
         const epochData = await axios.get(
           logreaderAddress + "/simulations/" + simid + "/messages?epoch=" + i
         );
-        epochData.data.forEach(d => {
-          if (d.PowerOutput || d.PowerOutput == 0) {
-            stationObjs[d.SourceProcessId].powerOutput.push(d.PowerOutput);
-            if (i == epochCount) {
-              stationObjs[d.SourceProcessId].powerOutput.push(d.PowerOutput);
-            }
+        timeL.push(new Date(timeseconds + (epochLength * (i-1) * 1000)));
+        Object.keys(userObjects).forEach(uc => {
+        // Add null values if user is not arrived to station
+        if (new Date (userObjects[uc].userComponent.ArrivalTime) > new Date(timeseconds + (epochLength * (i-1) * 1000))) {
+          userObjects[uc].powerOutput.push(null)
+          userObjects[uc].chargingState.push(null)
+        } else {
+          //Add initial charging state 
+          if(userObjects[uc].initialChargingState == null){
+            userObjects[uc].initialChargingState = userObjects[uc].userComponent.StateOfCharge
+            userObjects[uc].chargingState.push(userObjects[uc].userComponent.StateOfCharge)
+            
           }
-          if (d.StateOfCharge && d.Topic === "User.CarState") {
-            sid = "s" + d.StationId;
-            stationObjs[sid].chargingState.push(d.StateOfCharge);
-            stationObjs[sid].finalchargingState = d.StateOfCharge;
-            if (d.Topic === "User.CarState") {
-              stationObjs[sid].timeline.push(new Date(timeseconds + (epochLength * i * 1000)));
-            //   let t = new Date(timeseconds + (epochLength * i * 1000))
-            //   let T = t.getHours().toString() + ":" + t.getMinutes().toString() + "0"
-            //   stationObjs[sid].timeline.push(T);
+          epochData.data.forEach(d => {
+            if(new Date (userObjects[uc].userComponent.TargetTime) > new Date(timeseconds + (epochLength * (i-1) * 1000))){
+              if(userObjects[uc].stationComponent.StationId == d.StationId && d.Topic == "PowerOutputTopic"){
+                userObjects[uc].powerOutput.push(d.PowerOutput)
+              }
+              if(userObjects[uc].userComponent.UserId == d.UserId && d.Topic == "User.CarState"){
+                userObjects[uc].chargingState.push(d.StateOfCharge)
+              }
+            } else {
+              if(userObjects[uc].finalchargingState == null) {
+                userObjects[uc].finalchargingState = userObjects[uc].chargingState[(userObjects[uc].chargingState).length - 1]
+                userObjects[uc].powerOutput.push(0)
+              }
             }
-          }
-        });
+
+          });
+        }
+        if(userObjects[uc].finalchargingState == null && i == epochCount) {
+          userObjects[uc].finalchargingState = userObjects[uc].chargingState[(userObjects[uc].chargingState).length - 1]
+        }
+      
+      
+      })
+
       }
-      res.send(stationObjs)
+      Object.keys(userObjects).forEach(uc => {
+        userObjects[uc].timeline = timeL
+      })
+      res.send(userObjects)
       res.end();
     } catch(error) {
       console.log(error)
@@ -90,3 +125,35 @@ app.get("/data", async function(req, res) {
   }
 });
 
+
+app.get("/simulations", async(req, res) => {
+    try {
+        const simulations = await axios.get(logreaderAddress + "/simulations");
+        res.send(simulations.data)
+        res.end();
+    } catch(e) {
+        console.log(e)
+        res.sendStatus(400)
+        res.end()
+    }
+
+})
+
+app.post("/simulations", async(req, res) => {
+  try {
+     console.log(req.body)
+     const newSim = await axios.post(simulationStarterAddress , req.body, {
+      headers: {
+      'Content-Type': 'application/json',
+      'private-token': privateToken
+      }
+    });
+     res.send(newSim.data)
+     res.end()
+  } catch(e) {
+      console.log(e)
+      res.sendStatus(400)
+      res.end()
+  }
+
+})
