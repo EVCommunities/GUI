@@ -64,7 +64,7 @@ app.get("/data", async function(req, res) {
       });
 
       // Initial start time of the simulations
-      let timeL = [] 
+      let timeL = []
 
       //Get epoch data for each epoch
       for (let i = 1; i < epochCount + 1; i++) {
@@ -78,11 +78,11 @@ app.get("/data", async function(req, res) {
           userObjects[uc].powerOutput.push(null)
           userObjects[uc].chargingState.push(null)
         } else {
-          //Add initial charging state 
+          //Add initial charging state
           if(userObjects[uc].initialChargingState == null){
             userObjects[uc].initialChargingState = userObjects[uc].userComponent.StateOfCharge
             userObjects[uc].chargingState.push(userObjects[uc].userComponent.StateOfCharge)
-            
+
           }
           epochData.data.forEach(d => {
             if(new Date (userObjects[uc].userComponent.TargetTime) > new Date(timeseconds + (epochLength * (i-1) * 1000))){
@@ -104,8 +104,8 @@ app.get("/data", async function(req, res) {
         if(userObjects[uc].finalchargingState == null && i == epochCount) {
           userObjects[uc].finalchargingState = userObjects[uc].chargingState[(userObjects[uc].chargingState).length - 1]
         }
-      
-      
+
+
       })
 
       }
@@ -148,11 +148,15 @@ app.post("/simulations", async(req, res) => {
       'private-token': privateToken
       }
     });
-     res.send(newSim.data)
+     res.status(newSim.status).send(newSim.data);
      res.end()
   } catch(e) {
       console.log(e)
-      res.sendStatus(400)
+      if (Object.hasOwn(e, "response") && Object.hasOwn(e.response, "status") && Object.hasOwn(e.response, "data")) {
+        res.status(e.response.status).send(e.response.data);
+      } else {
+        res.sendStatus(400);
+      }
       res.end()
   }
 

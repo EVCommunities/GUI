@@ -53,11 +53,19 @@ export const NewSimulation = (props) => {
         const res = await axios.post(backendAddress + "/simulations",JSON.parse(values) );
         console.log(res.data)
         setLoading(false)
-        setText(res.data.message + " " + "Simulation Id :" + res.data.simulation_id)
+        if (Object.hasOwn(res.data, "simulation_id")) {
+          setText(res.data.message + " " + "Simulation Id :" + res.data.simulation_id);
+        } else {
+          setText(res.data.message + " " + "Error:" + res.data.error);
+        }
       } catch(e) {
         console.log(e)
         setLoading(false)
-        setText(e.message)
+        if (Object.hasOwn(e, "response") && Object.hasOwn(e.response, "data") && Object.hasOwn(e.response.data, "error")) {
+          setText("Error: " + e.response.data.error);
+        } else {
+          setText(e.message);
+        }
       }
   }
 
