@@ -14,6 +14,7 @@ import {
   Modal
 } from '@mui/material';
 import axios from "axios";
+import payload from './sample-payload.json'
 
 const backendAddress = process.env.NEXT_PUBLIC_EVC_GUI_BACKEND || "http://localhost:7001";
 
@@ -69,6 +70,10 @@ export const NewSimulation = (props) => {
       }
   }
 
+  const onGenerate = async () => {
+    setValues(JSON.stringify(payload,null, 3));
+}
+
   return (
     <form
       autoComplete="off"
@@ -76,10 +81,26 @@ export const NewSimulation = (props) => {
       {...props}
     >
       <Card>
+      <Grid container spacing={2}>
+      <Grid item md={6}>
         <CardHeader
           subheader=""
           title="Simulation Starter"
         />
+        </Grid>
+        <Grid item md={6}>
+        <div style={{ padding: 20 }}>
+        <Button
+            color="secondary"
+            variant="contained"
+            onClick={onGenerate}
+          >
+            Generate Payload
+          </Button>
+        </div>
+
+          </Grid>
+          </Grid>
         <Divider />
         <CardContent>
           <Grid

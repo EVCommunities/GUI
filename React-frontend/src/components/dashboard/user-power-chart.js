@@ -1,5 +1,6 @@
 import React, { useEffect, useState }  from "react";
 import {Chart as ChartJS, LinearScale, PointElement, Tooltip, Legend, TimeScale} from "chart.js";
+import annotationPlugin from 'chartjs-plugin-annotation';
 import { Line } from 'react-chartjs-2';
 import { Bar } from 'react-chartjs-2';
 import { Box, Button, Card, CardContent, CardHeader, Divider, useTheme,LinearProgress, Typography } from '@mui/material';
@@ -7,23 +8,72 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import axios from "axios";
 
-ChartJS.register(LinearScale, PointElement, Tooltip, Legend, TimeScale);
+ChartJS.register(LinearScale, PointElement, Tooltip, Legend, TimeScale, annotationPlugin);
 
 export const UserPowerChart = (props) => {
   const theme = useTheme();
 
-  const options = {
+  let currentBattery = false
+
+  if (props.finalcharge != props.user.TargetStateOfCharge){
+    currentBattery = true
+  }
+
+  let options = {
+    plugins: {
+      annotation: {
+        annotations: {
+          point1: {
+            type: 'line',
+            xMin: new Date(props.user.TargetTime).toLocaleTimeString('en-GB', { hour: "numeric", minute: "numeric"}),
+            xMax: new Date(props.user.TargetTime).toLocaleTimeString('en-GB', { hour: "numeric", minute: "numeric"}),
+            borderColor: '#ab29d6',
+            label: {
+              content: "Target Time",
+              display: false,
+              position:'end'
+            },
+
+          },
+          point2: {
+            type: 'line',
+            xMin: new Date(props.user.ArrivalTime).toLocaleTimeString('en-GB', { hour: "numeric", minute: "numeric"}),
+            xMax: new Date(props.user.ArrivalTime).toLocaleTimeString('en-GB', { hour: "numeric", minute: "numeric"}),
+            borderColor: '#29def2',
+            label: {
+              content: "Arrival Time",
+              display: false
+            }
+          },
+          point3: {
+            type: 'line',
+            yMin: props.user.TargetStateOfCharge ,
+            yMax: props.user.TargetStateOfCharge,
+            borderColor: '#f55b60',
+            label: {
+              content: "Requested Battery Level",
+              display: true,
+              position:'center',
+              padding:0
+            },
+          },
+          point4: {
+            type: 'line',
+            yMin: props.finalcharge ,
+            yMax: props.finalcharge,
+            borderColor: '#90e843',
+            display: currentBattery,
+            label: {
+              content: "Current Battery Level",
+              display: true,
+              position:'center',
+              padding:0
+            },
+          }
+        }
+      }
+    },
     scales: {
-      // x: {
-      //   type: 'time',
-      //   time: {
-      //     // unit: "minute",
-      //     // unitStepSize: 1000
-      //     displayFormats: {
-      //       minute: 'h:mm'
-      //   }
-      //   }
-      // },
       "y1": {
         id:"y1",
         beginAtZero: true,
@@ -46,15 +96,6 @@ export const UserPowerChart = (props) => {
     maintainAspectRatio: false,
     responsive: true,
     xAxes: [
-      // {
-      //   ticks: {
-      //     fontColor: theme.palette.text.secondary
-      //   },
-      //   gridLines: {
-      //     display: false,
-      //     drawBorder: false
-      //   }
-      // }
     ],
     yAxes: [
       {
@@ -166,7 +207,7 @@ export const UserPowerChart = (props) => {
             gutterBottom="true"
             variant="overline"
           >
-            Final Battery: <span style={{'color':'green'}}> {props.finalcharge}% </span>  &nbsp; &nbsp;
+            Final Battery: <span style={{'color':'green'}}> {props.finalcharge.toFixed(2)}% </span>  &nbsp; &nbsp;
           </Typography>
           <Divider />
           <Typography
