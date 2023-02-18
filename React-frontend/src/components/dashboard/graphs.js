@@ -43,6 +43,7 @@ export const Graphs = (props) => {
                         <UserPowerChart
                             data1={res.data[item].chargingState}
                             data2={res.data[item].powerOutput}
+                            arrivalTime={res.data[item].userComponent.ArrivalTime}
                             labels={setTimeline(res.data[item].timeline)}
                             user={res.data[item].userComponent}
                             station={res.data[item].stationComponent}
