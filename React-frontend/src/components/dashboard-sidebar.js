@@ -30,6 +30,11 @@ const items = [
     icon: (<Upload fontSize="small" />),
     title: 'User View'
   },
+  {
+    href: '/controlpanel',
+    icon: (<Upload fontSize="small" />),
+    title: 'Control Panel'
+  }
 ];
 
 export const DashboardSidebar = (props) => {
