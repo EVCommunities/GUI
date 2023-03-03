@@ -4,14 +4,15 @@ import { NewSimulation } from '../components/simulation/new-simulation';
 import { DashboardLayout } from '../components/dashboard-layout';
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import {UserSimulation} from '../components/user-simulation/user-simulation'
 
 
-const Page = ({id}) => (
+const Page = ({username,simid}) => (
   
-  <>
+    <>
     <Head>
       <title>
-        New Simulation 
+        User View
       </title>
     </Head>
     <Box
@@ -21,26 +22,15 @@ const Page = ({id}) => (
         py: 8
       }}
     >
-      <Container maxWidth="lg">
-        <Typography
-          sx={{ mb: 3 }}
-          variant="h4"
-        >
-          Create A New Simulation {id}
-        </Typography>
+      <Container maxWidth ='lg'>
         <Grid
           container
           spacing={3}
         >
-          <Grid
-            item
-            lg={8}
-            md={8}
-            xs={12}
-          >
-
-<NewSimulation />
-          </Grid>
+<UserSimulation
+username={username}
+simid={simid}
+/>
         </Grid>
       </Container>
     </Box>
@@ -54,9 +44,10 @@ Page.getLayout = (page) => (
 );
 
 Page.getInitialProps = async ({ query }) => {
-  const {id} = query
-  console.log(id)
-  return {id}
+  const {username} = query
+  const {simid} = query
+  console.log('simid :',simid)
+  return {username, simid}
 }
 
 export default Page;

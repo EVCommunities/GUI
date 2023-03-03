@@ -1,8 +1,9 @@
 
 import Head from 'next/head';
-import { Box, Container } from '@mui/material';
+import { Box, Container, Grid,Typography } from '@mui/material';
 import { SimulationrListResults } from '../components/simulation/simulation-list-results';
 import { DashboardLayout } from '../components/dashboard-layout';
+import {UserInput} from '../components/user-view/userinput'
 
 
 
@@ -10,7 +11,7 @@ const Page = () => (
   <>
     <Head>
       <title>
-        Simulations
+        User View
       </title>
     </Head>
     <Box
@@ -20,10 +21,14 @@ const Page = () => (
         py: 8
       }}
     >
-      <Container maxWidth={false}>
-        <Box sx={{ mt: 3 }}>
-          <SimulationrListResults />
-        </Box>
+      <Container maxWidth ='lg'>
+        <Grid
+          container
+          spacing={3}
+        >
+
+<UserInput />
+        </Grid>
       </Container>
     </Box>
   </>

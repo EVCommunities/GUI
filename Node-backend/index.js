@@ -2,6 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const axios = require("axios");
+const fs = require('fs');
+const dbPath = './db.json';
+const { InMemoryDatabase } = require('in-memory-database');
 
 app.use(cors());
 
@@ -9,7 +12,13 @@ app.listen(7001, () => {
   console.log("Server running on port 7001");
 });
 
+let db = [];
+if (fs.existsSync(dbPath)) {
+  db = JSON.parse(fs.readFileSync(dbPath));
+}
 app.use(express.json())
+
+const client = new InMemoryDatabase();
 
 const logreaderAddress = process.env.LOGREADER_API || "http://localhost:8080"  ;
 const simulationStarterAddress = process.env.SIMULATION_STARTER || "http://localhost:8500/"  ;
@@ -157,3 +166,83 @@ app.post("/simulations", async(req, res) => {
   }
 
 })
+
+app.get("/users", async function(req, res) {
+  res.send(db)
+  res.end()
+})
+
+app.post("/session", async function(req, res) {
+  let sim_payload = JSON.parse(fs.readFileSync('./simulation_payload.json'));
+  sim_payload.Name = req.body.Name
+  sim_payload.EpochLength = req.body.EpochLength
+  sim_payload.TotalMaxPower = req.body.TotalMaxPower
+
+  client.set('sim_payload', sim_payload);
+  res.send("Session is set successfully")
+  res.end()
+})
+
+app.get("/session", async function(req, res) {
+  let stor = client.get('sim_payload');
+  console.log(stor)
+  res.send(stor)
+  res.end()
+})
+
+app.post("/usersession", async function(req, res) {
+  let stor = client.get('sim_payload');
+  if(stor === undefined){
+    res.status(400)
+    res.send("Session is not started")
+  } else {
+    let user_sessions = client.get('user_sessions');
+    if(user_sessions === undefined){
+      user_sessions = []
+    }
+    user_sessions.push(req.body)
+    client.set('user_sessions', user_sessions);
+    res.send("User session is recevied")
+    res.end()
+    if (user_sessions.length == 3){
+      client.set('simulation_status', 'started')
+      sim_payload  = client.get('sim_payload');
+      sim_payload.Users = user_sessions
+      console.log("simP :", sim_payload)
+      const newSim = await axios.post(simulationStarterAddress , sim_payload, {
+        headers: {
+        'Content-Type': 'application/json',
+        'private-token': privateToken
+        }
+      });
+      client.set('simulation_status', 'finnished')
+      client.set('sim_message',newSim.data)
+      console.log(newSim.data)
+  
+    }
+  }
+})
+
+
+app.get("/usersession", async function(req, res) {
+  let user_sessions = client.get('user_sessions');
+  if(user_sessions === undefined){
+    res.status(404)
+    res.send("Session is not initiated")
+    res.end()
+  } else {
+    if (user_sessions.length == 3){
+      if(client.get('simulation_status') == 'finnished') {
+        let sim_message = client.get('sim_message')
+        res.send(sim_message)
+      } else {
+        res.send("Simulation is running now")
+      }
+    } else {
+      res.send("Waiting for all users to submit information")
+    }
+    res.end() 
+  }
+
+})
+
