@@ -135,7 +135,7 @@ const getData = async (simid) => {
       } catch(e) {
         console.log(e)
         setLoading(false)
-        setText(e.message)
+        setText(e.response.data ? e.response.data : e.message )
       }
 
 

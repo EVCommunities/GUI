@@ -183,6 +183,15 @@ app.post("/session", async function(req, res) {
   res.end()
 })
 
+app.delete("/session", async function(req, res) {
+  client.delete('sim_payload')
+  client.delete('user_sessions')
+  client.delete('simulation_status')
+  client.delete('sim_message')
+  res.send("Current session is removed successfully")
+  
+})
+
 app.get("/session", async function(req, res) {
   let stor = client.get('sim_payload');
   console.log(stor)
@@ -194,7 +203,7 @@ app.post("/usersession", async function(req, res) {
   let stor = client.get('sim_payload');
   if(stor === undefined){
     res.status(400)
-    res.send("Session is not started")
+    res.send("Session is Not Started by Admin")
   } else {
     let user_sessions = client.get('user_sessions');
     if(user_sessions === undefined){

@@ -45,6 +45,15 @@ export const ControlPanel = (props) => {
     }
   };
 
+  const clearSession = async () => {
+    try {
+        const res = await axios.delete(backendAddress + "/session" );
+        console.log(res.data)
+        setURL('')
+    } catch(e) {
+        console.log(e)
+    }
+  }
 
   const onSubmit = async () => {
     let tempurl = window.location.href.toString()
@@ -176,12 +185,53 @@ md={6}>
       md={6}
       xs={6}
     >
+              <Card>
+      <Grid container
+spacing={2}>
+      <Grid item
+md={6}>
+        <CardHeader
+          subheader=""
+          title="URLs List of Users"
+        />
+        </Grid>
+        <Grid item
+md={6}>
+        <div style={{ padding: 20 }}>
+        <Button
+            color="secondary"
+            variant="contained"
+            onClick={clearSession}
+          >
+            Clear Session
+          </Button>
+        </div>
+
+          </Grid>
+          </Grid>
+        <Divider />
+        <CardContent>
+          <Grid
+            container
+            spacing={3}
+          >
+            <Grid
+              item
+              md={12}
+              xs={12}
+            >
 <TextField fullWidth disabled  label={'User1 URL'} id="margin-dense" margin="dense" value={url + 'users?username=1'}        
 InputLabelProps={{
         shrink: true,
       }} />
 <TextField fullWidth disabled  label={'User2 URL'} id="margin-dense" margin="dense" value={url + 'users?username=2'}  />
 <TextField fullWidth disabled  label={'User3 URL'} id="margin-dense" margin="dense" value={url + 'users?username=3'}  />
+
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+
 </Grid>
     : <> </> }
 
