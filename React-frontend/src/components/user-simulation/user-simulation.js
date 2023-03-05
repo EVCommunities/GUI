@@ -95,7 +95,7 @@ const getData = async (simid) => {
         console.log("got",res.data)
         console.log('cuser :', currentUser)
         setData(res.data[payload[index].UserName])
-        setOpen(true)
+        setOpen(false)
     } catch(error) {
         console.log(error)
     }
@@ -105,32 +105,44 @@ const getData = async (simid) => {
     try {
         setText("Processing")
         setOpen(true)
+        if (new Date(c_time) > new Date(r_time)){
+            setText("Target Time must be greater than Arrival Time")
+            setLoading(false)
+            return
+        }
         currentUser.StateOfCharge = c_battery
-        currentUser.ArrivalTime = c_time  + ':00Z'
+        currentUser.ArrivalTime = new Date(c_time).toISOString('en-US', { timeZone: 'GMT' })
         currentUser.TargetStateOfCharge = r_battery
-        currentUser.TargetTime = r_time + ':00Z'
+        currentUser.TargetTime = new Date(r_time).toISOString('en-US', { timeZone: 'GMT' })
         console.log("CR :",currentUser)
         const res = await axios.post(backendAddress + "/usersession",(currentUser) );
         console.log(res.data)
-        setLoading(false)
+        setLoading(true)
         setText(currentUser.UserName + " requirements are submitted. Waiting to process.......")
         const intervalid = setInterval( async () => {
-            const sessionResponse = await checkStatus()
-            console.log('sr :',sessionResponse)
-            if(sessionResponse.status == 200){
-                if (sessionResponse.data == "Waiting for all users to submit information" || 
-                sessionResponse.data == "Simulation is running now" ){
-                    setText(sessionResponse.data)
-                } else {
-                    clearInterval(intervalid)
-                    setText(sessionResponse.data.message + " " + "Simulation Id :" + sessionResponse.data.simulation_id)
-                    console.log(modalText)
-                    setTimeout(() => {
-                        getData(sessionResponse.data.simulation_id)
-                      }, "20000")
-                    
+            try{
+                const sessionResponse = await checkStatus()
+                console.log('sr :',sessionResponse)
+                if(sessionResponse.status == 200){
+                    if (sessionResponse.data == "Waiting for all users to submit information" || 
+                    sessionResponse.data == "Simulation is running now" ){
+                        setText(sessionResponse.data)
+                    } else {
+                        clearInterval(intervalid)
+                        setText(sessionResponse.data.message + " " + "Simulation Id :" + sessionResponse.data.simulation_id)
+                        console.log(modalText)
+                        setTimeout(() => {
+                            getData(sessionResponse.data.simulation_id)
+                          }, "20000")
+                        
+                    }
                 }
+            } catch (e){
+                setLoading(false)
+                setText("An error occured " + e.message ? e.message : "" )
+                console.log(e)
             }
+
         }, 5000);
       } catch(e) {
         console.log(e)
@@ -313,6 +325,7 @@ sx={{ m: 2 }} />
   aria-describedby="modal-modal-description"
 >
   <Box sx={style}>
+  {isLoading ? <CircularProgress /> : <> </>}
     <Typography id="modal-modal-title" variant="h6" component="h2">
       {modalText}
     </Typography>
