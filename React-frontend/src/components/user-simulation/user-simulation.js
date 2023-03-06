@@ -224,7 +224,7 @@ spacing={2}>
 md={12}>
         <CardHeader
           style={{ padding: 15 }}
-          title={"Schedule New Charging for User - " + currentUser.UserName}
+          title={"Schedule New Charging for " + currentUser.UserName}
         />
         </Grid>
         <Grid item
