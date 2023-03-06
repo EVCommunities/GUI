@@ -1,7 +1,7 @@
 [
    {  "UserId":1,
-      "CarBatteryCapacity": 150,
-      "CarMaxPower": 15.5,
+      "CarBatteryCapacity": 90,
+      "CarMaxPower": 9.5,
       "StateOfCharge": 27.3,
       "TargetStateOfCharge": 84.5,
       "StationId": "1",
@@ -11,8 +11,8 @@
     },
     {
       "UserId":2,
-      "CarBatteryCapacity": 150,
-      "CarMaxPower": 15.5,
+      "CarBatteryCapacity": 80,
+      "CarMaxPower": 9.0,
       "StateOfCharge": 27.3,
       "TargetStateOfCharge": 84.5,
       "StationId": "2",
@@ -22,8 +22,8 @@
     },
     {
       "UserId":3,
-      "CarBatteryCapacity": 150,
-      "CarMaxPower": 15.5,
+      "CarBatteryCapacity": 75,
+      "CarMaxPower": 8.5,
       "StateOfCharge": 27.3,
       "TargetStateOfCharge": 84.5,
       "StationId": "3",
