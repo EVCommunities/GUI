@@ -73,7 +73,7 @@ app.get("/data", async function(req, res) {
       });
 
       // Initial start time of the simulations
-      let timeL = [] 
+      let timeL = []
 
       //Get epoch data for each epoch
       for (let i = 1; i < epochCount + 1; i++) {
@@ -87,11 +87,11 @@ app.get("/data", async function(req, res) {
           userObjects[uc].powerOutput.push(null)
           userObjects[uc].chargingState.push(null)
         } else {
-          //Add initial charging state 
+          //Add initial charging state
           if(userObjects[uc].initialChargingState == null){
             userObjects[uc].initialChargingState = userObjects[uc].userComponent.StateOfCharge
             userObjects[uc].chargingState.push(userObjects[uc].userComponent.StateOfCharge)
-            
+
           }
           epochData.data.forEach(d => {
             if(new Date (userObjects[uc].userComponent.TargetTime) > new Date(timeseconds + (epochLength * (i-1) * 1000))){
@@ -113,8 +113,8 @@ app.get("/data", async function(req, res) {
         if(userObjects[uc].finalchargingState == null && i == epochCount) {
           userObjects[uc].finalchargingState = userObjects[uc].chargingState[(userObjects[uc].chargingState).length - 1]
         }
-      
-      
+
+
       })
 
       }
@@ -179,17 +179,26 @@ app.post("/session", async function(req, res) {
   sim_payload.TotalMaxPower = req.body.TotalMaxPower
 
   client.set('sim_payload', sim_payload);
+  client.set('user_names', req.body.UserNames);
   res.send("Session is set successfully")
   res.end()
 })
 
 app.delete("/session", async function(req, res) {
   client.delete('sim_payload')
+  client.delete('user_names')
   client.delete('user_sessions')
   client.delete('simulation_status')
   client.delete('sim_message')
   res.send("Current session is removed successfully")
-  
+
+})
+
+app.get("/session_users", async function(req, res) {
+  let user_names = client.get('user_names');
+  console.log(user_names)
+  res.send(user_names)
+  res.end()
 })
 
 app.get("/session", async function(req, res) {
@@ -227,7 +236,7 @@ app.post("/usersession", async function(req, res) {
       client.set('simulation_status', 'finnished')
       client.set('sim_message',newSim.data)
       console.log(newSim.data)
-  
+
     }
   }
 })
@@ -250,7 +259,7 @@ app.get("/usersession", async function(req, res) {
     } else {
       res.send("Waiting for all users to submit information")
     }
-    res.end() 
+    res.end()
   }
 
 })
