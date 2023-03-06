@@ -21,6 +21,7 @@ import axios from "axios";
 
 const backendAddress = process.env.NEXT_PUBLIC_EVC_GUI_BACKEND || "http://localhost:7001";
 
+const CAR_IMAGES = 3;
 
 
 export const UserSimulation = (props) => {
@@ -234,7 +235,7 @@ md={6}>
         <Divider />
         <CardMedia
         sx={{ height: 190 }}
-        image={"/static/images/" + props.username + ".jpg"}
+        image={"/static/images/" + (parseInt(props.username) % 3 + 1) + ".jpg"}
         title="Car image"
       />
         <CardContent>
