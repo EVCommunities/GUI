@@ -6,6 +6,8 @@ const fs = require('fs');
 const dbPath = './db.json';
 const { InMemoryDatabase } = require('in-memory-database');
 
+const CAR_MAX_POWER_IN_DEMO = 9.0;
+
 app.use(cors());
 
 app.listen(7001, () => {
@@ -183,17 +185,26 @@ app.post("/session", async function(req, res) {
   sim_payload.TotalMaxPower = req.body.TotalMaxPower
 
   client.set('sim_payload', sim_payload);
+  client.set('user_names', req.body.UserNames);
   res.send("Session is set successfully")
   res.end()
 })
 
 app.delete("/session", async function(req, res) {
   client.delete('sim_payload')
+  client.delete('user_names')
   client.delete('user_sessions')
   client.delete('simulation_status')
   client.delete('sim_message')
   res.send("Current session is removed successfully")
-  
+
+})
+
+app.get("/session_users", async function(req, res) {
+  let user_names = client.get('user_names');
+  console.log(user_names)
+  res.send(user_names)
+  res.end()
 })
 
 app.get("/session", async function(req, res) {
@@ -215,23 +226,40 @@ app.post("/usersession", async function(req, res) {
     }
     user_sessions.push(req.body)
     client.set('user_sessions', user_sessions);
-    res.send("User session is recevied")
+    res.send("User session is received")
     res.end()
-    if (user_sessions.length == 3){
+    if (user_sessions.length == Object.keys(client.get("user_names")).length){
       client.set('simulation_status', 'started')
-      sim_payload  = client.get('sim_payload');
+      let sim_payload  = client.get('sim_payload');
       sim_payload.Users = user_sessions
+
+      let station_payload = [];
+      for (const user_session of user_sessions) {
+        station_payload.push({
+          "StationId": user_session.StationId,
+          "MaxPower": CAR_MAX_POWER_IN_DEMO
+        })
+      }
+      sim_payload.Stations = station_payload;
+
       console.log("simP :", sim_payload)
-      const newSim = await axios.post(simulationStarterAddress , sim_payload, {
-        headers: {
-        'Content-Type': 'application/json',
-        'private-token': privateToken
-        }
-      });
-      client.set('simulation_status', 'finnished')
-      client.set('sim_message',newSim.data)
-      console.log(newSim.data)
-  
+      try {
+        const newSim = await axios.post(simulationStarterAddress , sim_payload, {
+          headers: {
+          'Content-Type': 'application/json',
+          'private-token': privateToken
+          }
+        });
+        client.set('simulation_status', 'finished')
+        client.set('sim_message',newSim.data)
+        console.log(newSim.data)
+      }
+      catch(error) {
+        console.log(error);
+        client.set('simulation_status', 'finished')
+        client.set('sim_message', 'Error starting the simulation')
+      }
+
     }
   }
 })
@@ -244,8 +272,8 @@ app.get("/usersession", async function(req, res) {
     res.send("Session is not initiated")
     res.end()
   } else {
-    if (user_sessions.length == 3){
-      if(client.get('simulation_status') == 'finnished') {
+    if (user_sessions.length == Object.keys(client.get("user_names")).length){
+      if(client.get('simulation_status') == 'finished') {
         let sim_message = client.get('sim_message')
         res.send(sim_message)
       } else {
@@ -254,7 +282,7 @@ app.get("/usersession", async function(req, res) {
     } else {
       res.send("Waiting for all users to submit information")
     }
-    res.end() 
+    res.end()
   }
 
 })
