@@ -7,5 +7,6 @@ RUN npm clean-install
 COPY index.js /app/
 COPY db.json /app/
 COPY simulation_payload.json /app/
+COPY station_payload.json /app/
 
 ENTRYPOINT [ "npm", "start" ]

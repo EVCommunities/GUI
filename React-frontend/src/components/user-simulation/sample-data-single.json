@@ -1,0 +1,11 @@
+{
+    "UserId":1,
+    "CarBatteryCapacity": 150,
+    "CarMaxPower": 15.5,
+    "StateOfCharge": 27.3,
+    "TargetStateOfCharge": 84.5,
+    "StationId": "1",
+    "ArrivalTime": "2023-01-23T17:00:00Z",
+    "TargetTime": "2023-01-24T07:30:00Z",
+    "UserName":"User_1"
+}

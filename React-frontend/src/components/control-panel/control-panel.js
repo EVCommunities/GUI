@@ -245,8 +245,14 @@ md={6}>
 InputLabelProps={{
         shrink: true,
       }} />
-<TextField fullWidth disabled  label={user_name_map['2'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=2'}  />
-<TextField fullWidth disabled  label={user_name_map['3'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=3'}  />
+{"2" in user_name_map ? <TextField fullWidth disabled  label={user_name_map['2'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=2'}  /> : <></> }
+{"3" in user_name_map ? <TextField fullWidth disabled  label={user_name_map['3'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=3'}  /> : <></> }
+{"4" in user_name_map ? <TextField fullWidth disabled  label={user_name_map['4'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=4'}  /> : <></> }
+{"5" in user_name_map ? <TextField fullWidth disabled  label={user_name_map['5'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=5'}  /> : <></> }
+{"6" in user_name_map ? <TextField fullWidth disabled  label={user_name_map['6'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=6'}  /> : <></> }
+{"7" in user_name_map ? <TextField fullWidth disabled  label={user_name_map['7'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=7'}  /> : <></> }
+{"8" in user_name_map ? <TextField fullWidth disabled  label={user_name_map['8'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=8'}  /> : <></> }
+{"9" in user_name_map ? <TextField fullWidth disabled  label={user_name_map['9'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=9'}  /> : <></> }
 
             </Grid>
           </Grid>

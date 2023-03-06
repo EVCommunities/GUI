@@ -220,22 +220,39 @@ app.post("/usersession", async function(req, res) {
     }
     user_sessions.push(req.body)
     client.set('user_sessions', user_sessions);
-    res.send("User session is recevied")
+    res.send("User session is received")
     res.end()
-    if (user_sessions.length == 3){
+    if (user_sessions.length == Object.keys(client.get("user_names")).length){
       client.set('simulation_status', 'started')
-      sim_payload  = client.get('sim_payload');
+      let sim_payload  = client.get('sim_payload');
       sim_payload.Users = user_sessions
+
+      let station_payload = [];
+      for (const user_session of user_sessions) {
+        station_payload.push({
+          "StationId": user_session.StationId,
+          "MaxPower": 12.5
+        })
+      }
+      sim_payload.Stations = station_payload;
+
       console.log("simP :", sim_payload)
-      const newSim = await axios.post(simulationStarterAddress , sim_payload, {
-        headers: {
-        'Content-Type': 'application/json',
-        'private-token': privateToken
-        }
-      });
-      client.set('simulation_status', 'finnished')
-      client.set('sim_message',newSim.data)
-      console.log(newSim.data)
+      try {
+        const newSim = await axios.post(simulationStarterAddress , sim_payload, {
+          headers: {
+          'Content-Type': 'application/json',
+          'private-token': privateToken
+          }
+        });
+        client.set('simulation_status', 'finished')
+        client.set('sim_message',newSim.data)
+        console.log(newSim.data)
+      }
+      catch(error) {
+        console.log(error);
+        client.set('simulation_status', 'finished')
+        client.set('sim_message', 'Error starting the simulation')
+      }
 
     }
   }
@@ -249,8 +266,8 @@ app.get("/usersession", async function(req, res) {
     res.send("Session is not initiated")
     res.end()
   } else {
-    if (user_sessions.length == 3){
-      if(client.get('simulation_status') == 'finnished') {
+    if (user_sessions.length == Object.keys(client.get("user_names")).length){
+      if(client.get('simulation_status') == 'finished') {
         let sim_message = client.get('sim_message')
         res.send(sim_message)
       } else {
