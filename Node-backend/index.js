@@ -6,6 +6,8 @@ const fs = require('fs');
 const dbPath = './db.json';
 const { InMemoryDatabase } = require('in-memory-database');
 
+const CAR_MAX_POWER_IN_DEMO = 9.5;
+
 app.use(cors());
 
 app.listen(7001, () => {
@@ -231,7 +233,7 @@ app.post("/usersession", async function(req, res) {
       for (const user_session of user_sessions) {
         station_payload.push({
           "StationId": user_session.StationId,
-          "MaxPower": 12.5
+          "MaxPower": CAR_MAX_POWER_IN_DEMO
         })
       }
       sim_payload.Stations = station_payload;

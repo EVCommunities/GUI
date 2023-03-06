@@ -15,7 +15,6 @@ import {
   Modal
 } from '@mui/material';
 import {UserPowerChart} from "../dashboard/user-power-chart";
-import payload from './sample-data.json'
 import payload_single from './sample-data-single.json'
 import axios from "axios";
 
@@ -162,7 +161,6 @@ const getData = async (simid) => {
 
   }
 
-const usernames = ['1','2','3']
 async function getUserNameMap() {
   try {
     let response = await axios.get(backendAddress + "/session_users");
@@ -174,7 +172,6 @@ async function getUserNameMap() {
 
 useEffect(async () => {
 
-    // if(Object.keys(userNameMap).includes(props.username)){
     const userNameMap = await getUserNameMap();
     console.log("username: " + props.username);
     console.log("All users: ", userNameMap);
@@ -186,9 +183,7 @@ useEffect(async () => {
         user.UserName = userName;
         user.StationId = props.username;
         setcurrentUser(user);
-        // const index = payload.findIndex(item => item.UserId === parseInt(props.username))
 
-        // setcurrentUser(payload[index])
         console.log("simid :", props.simid)
         console.log("it :", currentUser)
         if(props.simid){
