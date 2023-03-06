@@ -1,0 +1,20 @@
+{
+    "Name": "EVCommunities demo",
+    "EpochLength": 1800,
+    "TotalMaxPower": 19.5,
+    "Users": [],
+    "Stations": [
+      {
+        "StationId": "1",
+        "MaxPower": 12.5
+      },
+      {
+        "StationId": "2",
+        "MaxPower": 12.5
+      },
+      {
+        "StationId": "3",
+        "MaxPower": 12.5
+      }
+    ]
+  }

@@ -40,7 +40,8 @@ export const GraphSection = (props) => {
         
         <>
 
-  <Grid item xs={3}>
+  <Grid item
+xs={3}>
   <TextField
         fullWidth
         label="Simulation Id"
@@ -51,7 +52,8 @@ export const GraphSection = (props) => {
         onChange={handleInputChange}
       />
   </Grid>
-  <Grid item xs={6}>
+  <Grid item
+xs={6}>
   <Button
         color="primary"
         size="large"

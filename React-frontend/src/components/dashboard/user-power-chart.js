@@ -165,7 +165,6 @@ export const UserPowerChart = (props) => {
             endIcon={<ArrowDropDownIcon fontSize="small" />}
             size="small"
           >
-            Ongoing Power Chart
 
           </Button>
         )}
@@ -247,21 +246,6 @@ export const UserPowerChart = (props) => {
         </Box>
       </CardContent>
       <Divider />
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          p: 2
-        }}
-      >
-        <Button
-          color="primary"
-          endIcon={<ArrowRightIcon fontSize="small" />}
-          size="small"
-        >
-          Overview
-        </Button>
-      </Box>
     </Card>
   );
 };

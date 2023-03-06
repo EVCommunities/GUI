@@ -18,13 +18,23 @@ const items = [
   {
     href: '/simulations',
     icon: (<Simulation fontSize="small" />),
-    title: 'Simiulations'
+    title: 'Simulations'
   },
   {
     href: '/newsimulation',
     icon: (<Upload fontSize="small" />),
-    title: 'New Simiulation'
+    title: 'New Simulation'
   },
+  {
+    href: '/userview',
+    icon: (<Upload fontSize="small" />),
+    title: 'User View'
+  },
+  {
+    href: '/controlpanel',
+    icon: (<Upload fontSize="small" />),
+    title: 'Control Panel'
+  }
 ];
 
 export const DashboardSidebar = (props) => {

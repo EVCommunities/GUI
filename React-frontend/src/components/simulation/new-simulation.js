@@ -81,14 +81,17 @@ export const NewSimulation = (props) => {
       {...props}
     >
       <Card>
-      <Grid container spacing={2}>
-      <Grid item md={6}>
+      <Grid container
+spacing={2}>
+      <Grid item
+md={6}>
         <CardHeader
           subheader=""
           title="Simulation Starter"
         />
         </Grid>
-        <Grid item md={6}>
+        <Grid item
+md={6}>
         <div style={{ padding: 20 }}>
         <Button
             color="secondary"
@@ -155,7 +158,9 @@ export const NewSimulation = (props) => {
       >
         <Box sx={style}>
         {isLoading ? <CircularProgress /> : <> </>}
-          <Typography id="modal-modal-title" variant="h6" component="h2">
+          <Typography id="modal-modal-title"
+variant="h6"
+component="h2">
             {modalText}
           </Typography>
         </Box>
