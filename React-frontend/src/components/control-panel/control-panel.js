@@ -44,7 +44,10 @@ export const ControlPanel = (props) => {
         setTPower(parseInt(event.target.value))
     } else if (eName == 'user_names'){
         setUserNames(event.target.value);
-        let userNameList = event.target.value.split(" ");
+        let userNameList = event.target.value.split(" ").filter(name => name != "");
+        if (userNameList.length == 0) {
+          userNameList = ["User"];
+        }
         let userNameMap = {};
         for (let i=0; i<userNameList.length; ++i) {
           userNameMap[i+1] = userNameList[i];
@@ -66,6 +69,10 @@ export const ControlPanel = (props) => {
   }
 
   const onSubmit = async () => {
+    if (user_name_map == undefined || user_name_map.constructor != Object) {
+      setUserNameMap({"1": "User"});
+    }
+    console.log("Users: ", user_name_map);
     let tempurl = window.location.href.toString()
     tempurl = tempurl.replace('controlpanel','')
     console.log("tmp  :",tempurl)

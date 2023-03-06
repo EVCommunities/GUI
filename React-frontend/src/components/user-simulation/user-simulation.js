@@ -56,7 +56,6 @@ export const UserSimulation = (props) => {
     } else{
         setRTime(event.target.value)
     }
-    // setValues(event.target.value);
   };
 
   const style = {
@@ -166,7 +165,7 @@ const getData = async (simid) => {
 async function getUserNameMap() {
   try {
     let response = await axios.get(backendAddress + "/session_users");
-    return response.data;
+    return (response.data != undefined && response.data.constructor == Object) ? response.data : {};
   } catch (e) {
     return {};
   }
