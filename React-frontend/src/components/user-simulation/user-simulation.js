@@ -6,6 +6,7 @@ import {
   CardContent,
   CardHeader,
   Divider,
+  CardMedia,
   Grid,
   TextField,
   CircularProgress,
@@ -189,9 +190,9 @@ useEffect(() => {
 spacing={2} >
                   <Grid
             item
-            lg={4}
-            md={4}
-            xs={6}
+            lg={5}
+            md={5}
+            xs={12}
           >
       <Card>
       <Grid container
@@ -199,7 +200,7 @@ spacing={2}>
       <Grid item
 md={12}>
         <CardHeader
-        //   subheader= 
+        style={{ padding: 15 }}
           title={"Schedule New Charging for User - " + props.username}
         />
         </Grid>
@@ -209,7 +210,27 @@ md={6}>
           </Grid>
           </Grid>
         <Divider />
+        <CardMedia 
+        sx={{ height: 190 }}
+        image={"/static/images/" + props.username + ".jpg"}
+        title="Car image"
+      />
         <CardContent>
+        <Typography
+            color="info"
+            gutterBottom="true"
+            variant="overline"
+          >
+            Battery Capacity : <span style={{'color':'blue'}}>{currentUser.CarBatteryCapacity}kwh </span>  &nbsp; &nbsp;
+            </Typography>
+            <Typography
+            color="info"
+            gutterBottom="true"
+            variant="overline"
+          >
+            Max Power Input : <span style={{'color':'blue'}}>{currentUser.CarMaxPower}kw </span>  &nbsp; &nbsp;
+            </Typography>
+      <Divider />
           <Grid
             container
             spacing={3}
@@ -231,7 +252,7 @@ sx={{ m: 2 }} />
         type="number"
         onChange={handleChange}
         value={c_battery}
-        sx={{ m: 1 }}
+        sx={{ m: 0.2 }}
       />
         <TextField
         fullWidth
@@ -259,7 +280,7 @@ sx={{ m: 2 }} />
         type="number"
         onChange={handleChange}
         value={r_battery}
-        sx={{ m: 1 }}
+        sx={{ m: 0.2 }}
       />
         <TextField
         fullWidth
@@ -301,7 +322,7 @@ sx={{ m: 2 }} />
             item
             lg={7}
             md={6}
-            xs={6}
+            xs={12}
           >
       { data ?     
                               <UserPowerChart
