@@ -147,7 +147,7 @@ const getData = async (simid) => {
                 }
             } catch (e){
                 setLoading(false)
-                setText("An error occured " + e.message ? e.message : "" )
+                setText("An error occurred " + e.message ? e.message : "" )
                 console.log(e)
             }
 

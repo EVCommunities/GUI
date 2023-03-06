@@ -183,9 +183,13 @@ app.post("/session", async function(req, res) {
   sim_payload.Name = req.body.Name
   sim_payload.EpochLength = req.body.EpochLength
   sim_payload.TotalMaxPower = req.body.TotalMaxPower
+  let users = req.body.UserNames;
+  if (users == undefined || users.constructor != Object) {
+    users = {"1": "User_1", "2": "User_2"};
+  }
 
   client.set('sim_payload', sim_payload);
-  client.set('user_names', req.body.UserNames);
+  client.set('user_names', users);
   res.send("Session is set successfully")
   res.end()
 })

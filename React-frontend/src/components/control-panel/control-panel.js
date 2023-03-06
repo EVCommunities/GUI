@@ -46,7 +46,7 @@ export const ControlPanel = (props) => {
         setUserNames(event.target.value);
         let userNameList = event.target.value.split(" ").filter(name => name != "");
         if (userNameList.length == 0) {
-          userNameList = ["User"];
+          userNameList = ["User_1", "User_2"];
         }
         let userNameMap = {};
         for (let i=0; i<userNameList.length; ++i) {
@@ -70,7 +70,7 @@ export const ControlPanel = (props) => {
 
   const onSubmit = async () => {
     if (user_name_map == undefined || user_name_map.constructor != Object) {
-      setUserNameMap({"1": "User"});
+      setUserNameMap({"1": "User_1", "2": "User_2"});
     }
     console.log("Users: ", user_name_map);
     let tempurl = window.location.href.toString()
