@@ -3,8 +3,10 @@ version: "3.7"
 services:
 
   evcommunities-gui-backend:
-    image: evcommunities-gui-backend
-    build: Node-backend
+    image: ghcr.io/evcommunities/gui-backend:latest
+    build:
+      context: Node-backend
+      dockerfile: Dockerfile
     container_name: evcommunities-gui-backend
     restart: always
     ports:
@@ -17,10 +19,10 @@ services:
       - evcommunities_demo
 
   evcommunities-gui-frontend:
-    image: evcommunities-gui-frontend
+    image: ghcr.io/evcommunities/gui-frontend:latest
     build:
-      dockerfile: Dockerfile
       context: React-frontend
+      dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_EVC_GUI_BACKEND: ${NEXT_PUBLIC_EVC_GUI_BACKEND}
     container_name: evcommunities-gui-frontend

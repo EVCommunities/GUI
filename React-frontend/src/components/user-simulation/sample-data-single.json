@@ -1,7 +1,7 @@
 {
     "UserId":1,
-    "CarBatteryCapacity": 150,
-    "CarMaxPower": 15.5,
+    "CarBatteryCapacity": 90,
+    "CarMaxPower": 9.0,
     "StateOfCharge": 27.3,
     "TargetStateOfCharge": 84.5,
     "StationId": "1",

@@ -6,7 +6,7 @@ const fs = require('fs');
 const dbPath = './db.json';
 const { InMemoryDatabase } = require('in-memory-database');
 
-const CAR_MAX_POWER_IN_DEMO = 9.5;
+const CAR_MAX_POWER_IN_DEMO = 9.0;
 
 app.use(cors());
 
@@ -159,11 +159,15 @@ app.post("/simulations", async(req, res) => {
       'private-token': privateToken
       }
     });
-     res.send(newSim.data)
+     res.status(newSim.status).send(newSim.data);
      res.end()
   } catch(e) {
       console.log(e)
-      res.sendStatus(400)
+      if (Object.hasOwn(e, "response") && Object.hasOwn(e.response, "status") && Object.hasOwn(e.response, "data")) {
+        res.status(e.response.status).send(e.response.data);
+      } else {
+        res.sendStatus(400);
+      }
       res.end()
   }
 
