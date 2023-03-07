@@ -171,9 +171,12 @@ async function getUserNameMap() {
   }
 }
 
-useEffect(async () => {
+useEffect(() => {
+    async function getNames() {
+      return await getUserNameMap();
+    }
+    const userNameMap = getNames();
 
-    const userNameMap = await getUserNameMap();
     console.log("username: " + props.username);
     console.log("All users: ", userNameMap);
     if (props.username in userNameMap) {
