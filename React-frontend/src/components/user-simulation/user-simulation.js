@@ -16,11 +16,12 @@ import {
   Modal
 } from '@mui/material';
 import {UserPowerChart} from "../dashboard/user-power-chart";
-import payload from './sample-data.json'
+import payload_single from './sample-data-single.json'
 import axios from "axios";
 
 const backendAddress = process.env.NEXT_PUBLIC_EVC_GUI_BACKEND || "http://localhost:7001";
 
+const CAR_IMAGES = 3;
 
 
 export const UserSimulation = (props) => {
@@ -36,7 +37,7 @@ export const UserSimulation = (props) => {
   const [r_time, setRTime] = useState('');
 
   const handleClose = (event, reason) => {
-    if (reason && reason == "backdropClick" && (modalText == "Waiting for all users to submit information" || 
+    if (reason && reason == "backdropClick" && (modalText == "Waiting for all users to submit information" ||
     modalText == "Simulation is running now") ) {
         return;
     }
@@ -55,7 +56,6 @@ export const UserSimulation = (props) => {
     } else{
         setRTime(event.target.value)
     }
-    // setValues(event.target.value);
   };
 
   const style = {
@@ -90,12 +90,19 @@ const checkStatus = async () => {
 
 const getData = async (simid) => {
     try {
-        const index = payload.findIndex(item => item.UserId === parseInt(props.username))
-        setcurrentUser(payload[index])
+        let user = payload_single;
+        const userNameMap = await getUserNameMap();
+        const userId = parseInt(props.username);
+        const userName = userNameMap[userId];
+        user.UserId = userId;
+        user.UserName = userName;
+        user.StationId = props.username;
+        setcurrentUser(user);
+
         const res = await axios.get(backendAddress + "/data?simid=" + simid);
         console.log("got",res.data)
         console.log('cuser :', currentUser)
-        setData(res.data[payload[index].UserName])
+        setData(res.data[user.UserName])
         setOpen(false)
     } catch(error) {
         console.log(error)
@@ -125,7 +132,7 @@ const getData = async (simid) => {
                 const sessionResponse = await checkStatus()
                 console.log('sr :',sessionResponse)
                 if(sessionResponse.status == 200){
-                    if (sessionResponse.data == "Waiting for all users to submit information" || 
+                    if (sessionResponse.data == "Waiting for all users to submit information" ||
                     sessionResponse.data == "Simulation is running now" ){
                         setText(sessionResponse.data)
                     } else {
@@ -135,12 +142,12 @@ const getData = async (simid) => {
                         setTimeout(() => {
                             getData(sessionResponse.data.simulation_id)
                           }, "20000")
-                        
+
                     }
                 }
             } catch (e){
                 setLoading(false)
-                setText("An error occured " + e.message ? e.message : "" )
+                setText("An error occurred " + e.message ? e.message : "" )
                 console.log(e)
             }
 
@@ -155,29 +162,47 @@ const getData = async (simid) => {
 
   }
 
-const usernames = ['1','2','3']
+async function getUserNameMap() {
+  try {
+    let response = await axios.get(backendAddress + "/session_users");
+    return (response.data != undefined && response.data.constructor == Object) ? response.data : {};
+  } catch (e) {
+    return {};
+  }
+}
 
 useEffect(() => {
-    
-    if(usernames.includes(props.username)){
-        const index = payload.findIndex(item => item.UserId === parseInt(props.username))
-        
-        setcurrentUser(payload[index])
+    async function getNames() {
+      return await getUserNameMap();
+    }
+    const userNameMap = getNames();
+
+    console.log("username: " + props.username);
+    console.log("All users: ", userNameMap);
+    if (props.username in userNameMap) {
+        const userId = parseInt(props.username);
+        const userName = userNameMap[userId];
+        let user = payload_single;
+        user.UserId = userId;
+        user.UserName = userName;
+        user.StationId = props.username;
+        setcurrentUser(user);
+
         console.log("simid :", props.simid)
         console.log("it :", currentUser)
         if(props.simid){
             setTimeout(() => {
                 getData(props.simid)
               }, "2000")
-            
+
         }
     } else {
         if(props.username === undefined){
             setText("User ID is undefined")
         } else {
-            setText("User " + props.username + " is not recognized." )
+            setText("User with ID " + props.username + " is not recognized." )
         }
-        
+
         setOpen(true)
     }
  },[props.username])
@@ -185,7 +210,7 @@ useEffect(() => {
 
   return (
     <div>
-        { currentUser ? 
+        { currentUser ?
         <Grid container
 spacing={2} >
                   <Grid
@@ -200,8 +225,8 @@ spacing={2}>
       <Grid item
 md={12}>
         <CardHeader
-        style={{ padding: 15 }}
-          title={"Schedule New Charging for User - " + props.username}
+          style={{ padding: 15 }}
+          title={"Schedule New Charging for " + currentUser.UserName}
         />
         </Grid>
         <Grid item
@@ -210,9 +235,9 @@ md={6}>
           </Grid>
           </Grid>
         <Divider />
-        <CardMedia 
+        <CardMedia
         sx={{ height: 190 }}
-        image={"/static/images/" + props.username + ".jpg"}
+        image={"/static/images/" + (parseInt(props.username) % 3 + 1) + ".jpg"}
         title="Car image"
       />
         <CardContent>
@@ -324,7 +349,7 @@ sx={{ m: 2 }} />
             md={6}
             xs={12}
           >
-      { data ?     
+      { data ?
                               <UserPowerChart
                               data1={data.chargingState}
                               data2={data.powerOutput}

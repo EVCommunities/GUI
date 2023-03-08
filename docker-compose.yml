@@ -13,7 +13,7 @@ services:
       - ${EVC_GUI_BACKEND_PORT:-7001}:7001
     environment:
       LOGREADER_API: ${LOGREADER_API:-http://localhost:8080}
-      SIMULATION_STARTER: ${SIMULATION_STARTER:-http://localhost:8500/}
+      SIMULATION_STARTER: ${SIMULATION_STARTER:-http://localhost:8500}
       PRIVATE_TOKEN: ${PRIVATE_TOKEN}
     networks:
       - evcommunities_demo

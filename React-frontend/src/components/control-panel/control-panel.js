@@ -31,6 +31,8 @@ export const ControlPanel = (props) => {
   const [s_name, setSName] = useState();
   const [e_length, setELength] = useState();
   const [tot_power, setTPower] = useState();
+  const [user_names, setUserNames] = useState();
+  const [user_name_map, setUserNameMap] = useState();
   const [url, setURL] = useState('');
 
 
@@ -40,6 +42,17 @@ export const ControlPanel = (props) => {
         setSName((event.target.value))
     } else if(eName == 'tot_power'){
         setTPower(parseInt(event.target.value))
+    } else if (eName == 'user_names'){
+        setUserNames(event.target.value);
+        let userNameList = event.target.value.split(" ").filter(name => name != "");
+        if (userNameList.length == 0) {
+          userNameList = ["User_1", "User_2"];
+        }
+        let userNameMap = {};
+        for (let i=0; i<userNameList.length; ++i) {
+          userNameMap[i+1] = userNameList[i];
+        }
+        setUserNameMap(userNameMap);
     } else{
         setELength(parseInt(event.target.value))
     }
@@ -56,21 +69,25 @@ export const ControlPanel = (props) => {
   }
 
   const onSubmit = async () => {
+    if (user_name_map == undefined || user_name_map.constructor != Object) {
+      setUserNameMap({"1": "User_1", "2": "User_2"});
+    }
+    console.log("Users: ", user_name_map);
     let tempurl = window.location.href.toString()
     tempurl = tempurl.replace('controlpanel','')
     console.log("tmp  :",tempurl)
     setURL(tempurl)
     try {
-
         let payload = {
             "Name": s_name,
             "EpochLength": e_length,
-            "TotalMaxPower": tot_power
+            "TotalMaxPower": tot_power,
+            "UserNames": user_name_map
         }
         const res = await axios.post(backendAddress + "/session",payload );
         setText(res.data)
         setOpen(true)
-        
+
       } catch(e) {
         console.log(e)
         setLoading(false)
@@ -103,7 +120,7 @@ spacing={2}>
       <Grid item
 md={12}>
         <CardHeader
-         subheader={"Set the initial configurations for users"} 
+         subheader={"Set the initial configurations for users"}
           title={"Start a New Simulation for Interactive Users"}
         />
         </Grid>
@@ -155,6 +172,17 @@ md={6}>
         sx={{ m: 1 }}
       />
 
+        <TextField
+        fullWidth
+        label="List of user names"
+        margin="none"
+        name="user_names"
+        type="text"
+        onChange={handleChange}
+        value={user_names}
+        sx={{ m: 1 }}
+      />
+
         <Button
             color="secondary"
             variant="contained"
@@ -178,7 +206,7 @@ md={6}>
       </Card>
       </Grid>
 
-    { url ? 
+    { url ?
       <Grid
       item
       lg={7}
@@ -220,12 +248,18 @@ md={6}>
               md={12}
               xs={12}
             >
-<TextField fullWidth disabled  label={'User1 URL'} id="margin-dense" margin="dense" value={url + 'users?username=1'}        
+<TextField fullWidth disabled  label={user_name_map['1'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=1'}
 InputLabelProps={{
         shrink: true,
       }} />
-<TextField fullWidth disabled  label={'User2 URL'} id="margin-dense" margin="dense" value={url + 'users?username=2'}  />
-<TextField fullWidth disabled  label={'User3 URL'} id="margin-dense" margin="dense" value={url + 'users?username=3'}  />
+{"2" in user_name_map ? <TextField fullWidth disabled label={user_name_map['2'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=2'} /> : <></> }
+{"3" in user_name_map ? <TextField fullWidth disabled label={user_name_map['3'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=3'} /> : <></> }
+{"4" in user_name_map ? <TextField fullWidth disabled label={user_name_map['4'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=4'} /> : <></> }
+{"5" in user_name_map ? <TextField fullWidth disabled label={user_name_map['5'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=5'} /> : <></> }
+{"6" in user_name_map ? <TextField fullWidth disabled label={user_name_map['6'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=6'} /> : <></> }
+{"7" in user_name_map ? <TextField fullWidth disabled label={user_name_map['7'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=7'} /> : <></> }
+{"8" in user_name_map ? <TextField fullWidth disabled label={user_name_map['8'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=8'} /> : <></> }
+{"9" in user_name_map ? <TextField fullWidth disabled label={user_name_map['9'] + ' URL'} id="margin-dense" margin="dense" value={url + 'users?username=9'} /> : <></> }
 
             </Grid>
           </Grid>
@@ -235,7 +269,7 @@ InputLabelProps={{
 </Grid>
     : <> </> }
 
-      
+
       </Grid>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
