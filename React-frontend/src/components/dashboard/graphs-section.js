@@ -8,6 +8,8 @@ import axios from "axios";
 import {NewSales} from "./user-power-chart";
 import {Graphs} from "./graphs";
 
+const backendAddress = process.env.NEXT_PUBLIC_EVC_GUI_BACKEND || "http://localhost:7001";
+
 export const GraphSection = (props) => {
 
   const [userInput, setUserInput] = useState('');
@@ -26,6 +28,18 @@ export const GraphSection = (props) => {
     }
   }
 
+  const handleLatestButtonClick = async () => {
+    try {
+      const res = await axios.get(backendAddress + "/latest");
+      const simulationId = res.data;
+      setUserInput(simulationId);
+      setID(simulationId);
+      setgraphLoaded(true)
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
   const handleClearButtonClick = async () => {
     try {
       setID(null)
@@ -37,7 +51,7 @@ export const GraphSection = (props) => {
   }
 
     return (
-        
+
         <>
 
   <Grid item
@@ -73,10 +87,21 @@ xs={6}>
       >
        Clear
       </Button> : <> </> }
+
+      &nbsp; &nbsp;
+      <Button
+        color="secondary"
+        size="large"
+        type="submit"
+        variant="contained"
+        onClick={handleLatestButtonClick}
+      >
+       Show latest simulation
+      </Button>
   </Grid>
     <Graphs
     simid={id}
     />
     </>
     )
-} 
+}

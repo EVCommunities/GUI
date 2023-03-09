@@ -137,6 +137,23 @@ app.get("/data", async function(req, res) {
 });
 
 
+app.get("/latest", async function(req, res) {
+  try {
+    const simulations = await axios.get(logreaderAddress + "/simulations");
+    const data = simulations.data.sort((first, second) => {
+      return (first.SimulationId < second.SimulationId) ? 1 : -1;
+    });
+    const simulationId = data[0].SimulationId;
+    res.send(simulationId);
+    res.end();
+  } catch(error) {
+    console.log(error);
+    res.sendStatus(400);
+    res.end();
+  }
+});
+
+
 app.get("/simulations", async(req, res) => {
     try {
         const simulations = await axios.get(logreaderAddress + "/simulations");
