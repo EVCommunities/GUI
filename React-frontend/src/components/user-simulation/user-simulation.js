@@ -172,10 +172,12 @@ async function getUserNameMap() {
 }
 
 useEffect(() => {
-    async function getNames() {
-      return await getUserNameMap();
-    }
-    const userNameMap = getNames();
+  async function getNames() {
+    return await getUserNameMap();
+  }
+  let userNameMap = {};
+  getNames().then(names => {
+    userNameMap = names
 
     console.log("username: " + props.username);
     console.log("All users: ", userNameMap);
@@ -205,7 +207,10 @@ useEffect(() => {
 
         setOpen(true)
     }
- },[props.username])
+  }).catch(error => {
+    console.log(error);
+  });
+},[props.username])
 
 
   return (
