@@ -16,6 +16,7 @@ import {
   Modal
 } from '@mui/material';
 import {UserPowerChart} from "../dashboard/user-power-chart";
+import {RequirementResult} from "./requirement-result";
 import payload_single from './sample-data-single.json'
 import axios from "axios";
 
@@ -31,6 +32,7 @@ export const UserSimulation = (props) => {
   const [modalText, setText] = useState("Loading")
   const [currentUser, setcurrentUser] = useState();
   const [data, setData] = useState();
+  const [results, setResults] = useState();
   const [c_battery, setCBattery] = useState(0);
   const [c_time, setCTime] = useState('');
   const [r_battery, setRBattery] = useState(0);
@@ -103,6 +105,11 @@ const getData = async (simid) => {
         console.log("got",res.data)
         console.log('cuser :', currentUser)
         setData(res.data[user.UserName])
+
+        const results = await axios.get(backendAddress + "/result?simid=" + simid);
+        console.log("Results: ", results.data);
+        setResults(results.data);
+
         setOpen(false)
     } catch(error) {
         console.log(error)
@@ -364,6 +371,11 @@ sx={{ m: 2 }} />
                               station={data.stationComponent}
                               finalcharge={data.finalchargingState}
                               />
+      : <> </> }
+      { results ?
+        <RequirementResult
+          data={results}
+        />
       : <> </> }
       </Grid>
       </Grid>

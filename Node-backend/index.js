@@ -318,7 +318,7 @@ app.post("/usersession", async function(req, res) {
     client.set('user_sessions', user_sessions);
     res.send("User session is received")
     res.end()
-    if (user_sessions.length == Object.keys(client.get("user_names")).length){
+    if (user_sessions.length >= Object.keys(client.get("user_names")).length){
       client.set('simulation_status', 'started')
       let sim_payload  = client.get('sim_payload');
       sim_payload.Users = user_sessions
@@ -362,7 +362,7 @@ app.get("/usersession", async function(req, res) {
     res.send("Session is not initiated")
     res.end()
   } else {
-    if (user_sessions.length == Object.keys(client.get("user_names")).length){
+    if (user_sessions.length >= Object.keys(client.get("user_names")).length){
       if(client.get('simulation_status') == 'finished') {
         let sim_message = client.get('sim_message')
         res.send(sim_message)
