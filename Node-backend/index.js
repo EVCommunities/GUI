@@ -154,6 +154,75 @@ app.get("/latest", async function(req, res) {
 });
 
 
+app.get("/result", async function(req, res) {
+  try {
+    const simulationId = req.query.simid;
+    console.log("SimulationId: ", simulationId);
+    const baseUrl = logreaderAddress + "/simulations/" + simulationId;
+    const metadata = await axios.get(baseUrl);
+    const endTime = metadata.data.EndTime;
+    const lastEpoch = metadata.data.Epochs;
+    if (!(typeof endTime === "string" || endTime instanceof String) || !Number.isInteger(lastEpoch)) {
+      console.log("No simulation id found.");
+      res.sendStatus(400);
+      res.end();
+    }
+
+    const firstEpoch = 1;
+    const userMetadataTopic = "Init.User.CarMetadata";
+    const userStateTopic = "User.UserState";
+    const carStateTopic = "User.CarState";
+
+    const userMetadataUrl = baseUrl + "/messages?epoch=" + firstEpoch + "&topic=" + userMetadataTopic;
+    const userStateUrl = baseUrl + "/messages?epoch=" + lastEpoch + "&topic=" + userStateTopic;
+    const carStateUrl = baseUrl + "/messages?epoch=" + lastEpoch + "&topic=" + carStateTopic;
+
+    const initialData = await axios.get(userMetadataUrl);
+    const targetData = await axios.get(userStateUrl);
+    const endData = await axios.get(carStateUrl);
+
+    let userData = {};
+    for (const initialValues of initialData.data) {
+      userData[initialValues.SourceProcessId] = {"StartSoC": initialValues.StateOfCharge};
+    }
+    for (const targetValues of targetData.data) {
+      userData[targetValues.SourceProcessId].TargetSoC = targetValues.TargetStateOfCharge;
+    }
+    for (const endValues of endData.data) {
+      userData[endValues.SourceProcessId].EndSoC = endValues.StateOfCharge;
+    }
+    console.log("SoC: ", userData);
+
+    function getResult(singleUser) {
+      if (singleUser.TargetSoC <= singleUser.StartSoC) {
+        return 100.0;
+      }
+      else {
+        const result = 100.0 * (singleUser.EndSoC - singleUser.StartSoC) / (singleUser.TargetSoC - singleUser.StartSoC);
+        return Math.round(result * 10) / 10;
+      }
+    }
+
+    let resultData = {};
+    for (const user of Object.keys(userData)) {
+      const result = getResult(userData[user]);
+      resultData[user] = {
+        Ok: result >= 100.0 ? true : false,
+        Result: result
+      }
+    }
+    console.log("Result: ", resultData);
+
+    res.send(resultData);
+    res.end();
+  } catch(error) {
+    console.log(error);
+    res.sendStatus(400);
+    res.end();
+  }
+})
+
+
 app.get("/simulations", async(req, res) => {
     try {
         const simulations = await axios.get(logreaderAddress + "/simulations");
@@ -249,7 +318,7 @@ app.post("/usersession", async function(req, res) {
     client.set('user_sessions', user_sessions);
     res.send("User session is received")
     res.end()
-    if (user_sessions.length == Object.keys(client.get("user_names")).length){
+    if (user_sessions.length >= Object.keys(client.get("user_names")).length){
       client.set('simulation_status', 'started')
       let sim_payload  = client.get('sim_payload');
       sim_payload.Users = user_sessions
@@ -293,7 +362,7 @@ app.get("/usersession", async function(req, res) {
     res.send("Session is not initiated")
     res.end()
   } else {
-    if (user_sessions.length == Object.keys(client.get("user_names")).length){
+    if (user_sessions.length >= Object.keys(client.get("user_names")).length){
       if(client.get('simulation_status') == 'finished') {
         let sim_message = client.get('sim_message')
         res.send(sim_message)
