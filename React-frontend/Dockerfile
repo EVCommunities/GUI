@@ -1,4 +1,4 @@
-FROM node:16.19.0-slim
+FROM node:20.11.1-slim
 WORKDIR /app
 
 ARG NEXT_PUBLIC_EVC_GUI_BACKEND
